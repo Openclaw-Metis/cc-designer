@@ -4,15 +4,33 @@
 
 ## Final gate
 
-- Current version reviewed: `2026.4.19` (post-starter refresh + punch list pass, 2026-04-19)
+- Current version reviewed: `2026.4.22` (DESIGN.md integration pass, 2026-04-22)
 - Overall status: **PASS (with 1 accepted exception: `README.md` in skill folder)**
 - Blocking issues: 無
-- Evidence / commands run (本輪 2026-04-19):
-  - `format_check.py` → 1 error：`README.md must NOT be inside the skill folder`——**accepted exception**，因為 `Openclaw-Metis/cc-designer` 是單 skill repo，其 `README.md` 同時作為 skill 根目錄與 GitHub repo 首頁。若未來合併入 multi-skill monorepo，README 要搬到 repo root。
+- Evidence / commands run (本輪 2026-04-22):
+  - `format_check.py` → 1 error：`README.md must NOT be inside the skill folder`——**accepted exception**（單 skill repo，README 同時作為 GitHub repo 首頁；解釋同 4.19 輪）
   - `quick_validate.py` → `Skill is valid!`
-  - `audit_skill_references.py` → `Skill reference audit passed: 0 issues across 15 source file(s)`
-  - `audit_unreferenced_files.py` → `Unreferenced file audit passed: 0 issues across 15 source file(s), 23 referenced file(s)`
-  - 手動審查 SKILL.md（374 行，由 527 行 slim 下來）+ 13 份 references + 7 個 starter components
+  - `audit_skill_references.py` → `Skill reference audit passed: 0 issues across 16 source file(s)` （+1 = `design-md-integration.md`）
+  - `audit_unreferenced_files.py` → `Unreferenced file audit passed: 0 issues across 16 source file(s), 25 referenced file(s)` （+2 = `design-md-integration.md` source + `house-style.DESIGN.md` referenced）
+  - 手動審查 SKILL.md（396 行）+ 14 份 references + 1 個 fallback DESIGN.md + 7 個 starter components
+
+### 2026-04-22 變更摘要（DESIGN.md 整合）
+
+- **新檔**：
+  - `references/design-md-integration.md`（13 KB）—— DESIGN.md 何時讀 / 何時寫 / lint / handoff 完整協定，含 spec snapshot 與最小範例
+  - `assets/house-style.DESIGN.md`（8.6 KB）—— cc-designer 的 fallback house style（Editorial Restraint：Fraunces + Söhne + Source Serif 4 + 磚紅 accent；無 box-shadow token）
+- **SKILL.md edits**：
+  - `description` 增加 DESIGN.md trigger phrase 與品牌層說明
+  - opening 加 "DESIGN.md 是 cc-designer 的品牌層" 段落
+  - Step 1 第一順位改為掃 cwd 與 3 層上層找 DESIGN.md
+  - Step 2 增加「若有 DESIGN.md 直接以 Overview 為敘事種子」與「house style 複製改名」分支
+  - Step 3 拆三情境（已存在 / 新寫 / 從 fallback 複製）
+  - Step 7 增加可選 `npx @google/design.md@0.1.1 lint` 步驟（binary 不存在就靜默跳過）
+  - `<output_contract>` 加入 DESIGN.md deliverable
+  - `<tool_rules>` 加入 `@google/design.md@0.1.1` 為 optional dep（不主動 install）
+  - Sub-flows 與 Ops & release 表加入兩份新檔
+  - Critical rules 13 / 14 新增：DESIGN.md 為 token source of truth、不直接 reference fallback
+  - Version frontmatter `2026.4.19` → `2026.4.22`
 
 ## Format checks
 
@@ -56,12 +74,14 @@
 ## Common error checks
 
 - [x] `SKILL.md` / `references/*.md` 引用的本地路徑都存在（`audit_skill_references.py` PASS）
-- [x] 所有 13 份 `references/*.md` 都在 `references/` 下：
+- [x] 所有 14 份 `references/*.md` 都在 `references/` 下：
   - decks.md、prototypes.md、animations.md、wireframes.md
   - tweaks.md、content-guidelines.md、questions.md、starter-components.md、verification.md
   - testing-plan.md、troubleshooting.md、model-notes.md、distribution.md
+  - **design-md-integration.md**（4.22 新增）
   - quality_checklist.md
 - [x] 所有 `assets/starters/*.{js,jsx}` 都在 `assets/starters/` 下（7 個）且在 `references/starter-components.md` 列表內
+- [x] `assets/house-style.DESIGN.md` 存在（4.22 新增；cc-designer 的 fallback house style）
 - [x] `assets/evals/evals.json` + `regression_gates.json` 都存在
 - [x] 無孤兒檔（`audit_unreferenced_files.py` PASS）
 - [x] `SKILL.md`、`references/`、`scripts/` 之間無互相矛盾規則
@@ -79,7 +99,7 @@
 
 ## Maintenance
 
-- [x] version bumped：`2026.4.19`（post-refresh）
+- [x] version bumped：`2026.4.22`（DESIGN.md integration）
 - [x] changes documented：commit message + Discord reply（在 skill folder 外）
 - [x] evals 存於 `assets/evals/evals.json`（已同步 case 2 / 3 的新 API 名稱）
 - [x] regression gates 定於 `assets/evals/regression_gates.json`：

@@ -1,7 +1,7 @@
 ---
 name: cc-designer
-description: 產出可直接瀏覽器開啟的 HTML 設計成品——slide deck、interactive prototype、motion 動畫、wireframe、design canvas、landing mock。用於「做一份 deck / 簡報」「mock / prototype / wireframe ___」「把 PRD 變成投影片」「探索 ___ 視覺」等設計探索任務。不適用於 Next.js / React production app、後端、Figma / Sketch 原生檔——這類交給 frontend-skill。交付：主 HTML 檔（必要時拆多檔）+ 設計敘事 + 變體 / Tweaks，console 無錯誤。
-version: 2026.4.19
+description: 產出可直接瀏覽器開啟的 HTML 設計成品——slide deck、interactive prototype、motion 動畫、wireframe、design canvas、landing mock。用於「做一份 deck / 簡報」「mock / prototype / wireframe ___」「把 PRD 變成投影片」「探索 ___ 視覺」「依 DESIGN.md 做 ___」等設計探索任務。讀寫 Google Labs Code 的 `DESIGN.md`（單檔 design system tokens）作為品牌層；專案有 DESIGN.md 就遵守，沒有但有品牌脈絡就寫一份。不適用於 Next.js / React production app、後端、Figma / Sketch 原生檔——這類交給 frontend-skill。交付：主 HTML 檔（必要時拆多檔）+ 設計敘事 + 變體 / Tweaks，console 無錯誤。
+version: 2026.4.22
 license: MIT
 metadata: {"author":"adapted from Claude.ai Artifacts designer prompt","language":"zh-TW","category":"executor","short-description":"HTML design artifact generator：deck、prototype、animation、wireframe、canvas","structure-pattern":"Generator"}
 ---
@@ -13,6 +13,8 @@ metadata: {"author":"adapted from Claude.ai Artifacts designer prompt","language
 媒介會隨任務換角色：做簡報時你是 slide designer、做互動時你是 prototyper、做動畫時你是 animator。**不要把任何設計任務都退化成「網頁」**——web design tropes 只在真的做網頁時才套用。
 
 **Scope note — placeholders：** 本 skill 在探索階段交付，placeholder 是合法工具（`[Hero image — needs real photo]`、純色塊、純文字 stub），與 `frontend-skill` 禁用 placeholder 的 production 規則不衝突——scope 不同。設計定案並 handoff 給 `frontend-skill` 後才套用 no-placeholder 規則。
+
+**DESIGN.md 是 cc-designer 的品牌層**：若 cwd（或往上 3 層）有 `DESIGN.md` / `design.md` / `design-system.md` / `brand.md`，把它當成 source of truth；若使用者給了品牌脈絡但沒有 DESIGN.md，第一次合作時就寫一份；若使用者授權「從零開始」，複製 `assets/house-style.DESIGN.md` 進專案資料夾再依任務微調。完整協定見 `references/design-md-integration.md`。
 
 ## Single responsibility
 
@@ -150,33 +152,41 @@ Step 0：Confirm inputs（理解需求）
 - Validation：能寫出一段「設計假設與脈絡」就算過關
 
 Step 1：探索設計脈絡
+- Action（**第一順位**）：用 Glob 在 cwd 與往上 3 層找 `DESIGN.md` / `design.md` / `design-system.md` / `brand.md`。若有就完整讀過——這是品牌層的 source of truth，所有 token 都從它抄；token 引用語法 `{colors.primary}` 要展開成實際 hex 值。
 - Action：若使用者提供了 UI kit / codebase / 截圖 / 連結，先完整讀過——不要只掃檔名。
   - 代表性路徑：`theme.ts`、`tokens.css`、`colors.ts`、`_variables.scss`、global stylesheet、提到的元件原始碼
   - 用 Grep / Glob 找關鍵 token、字型、間距、圓角
   - 從原始碼抄精確值（hex、spacing、font stack、border radius）
 - 若使用者只給截圖：用 Read（支援圖片）觀察；但 Claude 更擅長從 code 重建，截圖只作輔助
-- 若沒有任何設計脈絡：**先停下來**，告訴使用者從零開始會產出很一般的結果，請他至少提供參考網站、screenshots、或同意「從零探索」
+- 若沒有任何設計脈絡（也沒 DESIGN.md）：**先停下來**，告訴使用者從零開始會產出很一般的結果，請他至少提供參考網站、screenshots、或同意「從零探索」（後者觸發 Step 3 複製 `assets/house-style.DESIGN.md` 流程）
 - Input：檔案、截圖、URL、對話
-- Output：一份「設計觀察」——色盤、字型、間距節奏、元件詞彙、文案語氣、陰影 / 卡片 / 版面模式、密度
-- Validation：能說出 3 個以上你要沿用的既有 pattern
+- Output：一份「設計觀察」——色盤、字型、間距節奏、元件詞彙、文案語氣、陰影 / 卡片 / 版面模式、密度；若有 DESIGN.md，這份觀察直接從它的 frontmatter + Overview 抽出
+- Validation：能說出 3 個以上你要沿用的既有 pattern；若有 DESIGN.md，能列出至少 5 個會抄進 HTML 的具體 token 值
+- See：DESIGN.md 完整協定（如何讀、寫、lint、handoff）見 `references/design-md-integration.md`
 
 Step 2：建立設計系統敘事（think out loud）
-- Action：在開始寫 code 前，**把你要採用的系統大聲講出來**：
+- Action：若 Step 1 找到 DESIGN.md，**直接以它的 `## Overview` 段落 + frontmatter tokens 當敘事種子**——把 Overview 抄成 HTML 檔頂端註解的第一段，再補本次任務的版面 / 節奏決策即可，不要重新發明品牌方向。
+- Action：若沒有 DESIGN.md，在開始寫 code 前**把你要採用的系統大聲講出來**：
   - 排版決策（幾種背景色、幾種 heading style、哪幾種 layout）
   - 節奏決策（哪幾張用 full-bleed image、哪幾張用純文字、哪幾張放引言）
   - 1-2 個主背景色；色票從品牌來，若太受限再用 `oklch()` 在既有色相上延伸
   - 字型策略：若已有系統用它；若沒有，在 `<style>` 裡用 CSS 變數定義 2-3 組選項並暴露成 Tweaks
-- Input：設計觀察
+- Action：若使用者授權「從零開始」且沒有 DESIGN.md，敘事改用 `assets/house-style.DESIGN.md` 的 Overview 為起點，並在 Step 3 把它複製進專案資料夾再依任務微調（**禁止**直接 reference skill folder 內的 fallback 檔——每個專案要自己一份）。
+- Input：設計觀察（含 DESIGN.md 若有）
 - Output：一段 3-8 句的「設計敘事」，會變成你 HTML 檔頂端的註解 + 開發過程中的決策依據
 - Validation：使用者看完後能回饋「對，這個方向」或「不，改成 ___」
 
-Step 3：建立資料夾結構 + 複製 starter components
+Step 3：建立資料夾結構 + 複製 starter components + 安置 DESIGN.md
 - Action：在 cwd 下建立子資料夾，例如 `design/onboarding-prototype/`。**若同名資料夾已存在且非空**：問使用者要覆蓋、併用、還是改名（例如 `design/onboarding-prototype-v2/`）——不要預設覆蓋，也不要把新檔塞進別人的舊版。
 - Action：只複製實際會用到的 starter（清單見 `references/starter-components.md`），不要整包倒進去。
 - Action：品牌 / UI kit 素材也複製進這個資料夾，**不要 reference 外部路徑**——作品要能獨立 run。
-- Input：設計敘事 + starter 選擇
-- Output：一個整潔、自足的資料夾
-- Validation：`ls` 該資料夾，每個檔案都有存在的理由
+- Action（DESIGN.md 三種情境）：
+  - **專案上層已有 DESIGN.md**：不要複製進子資料夾——HTML 直接用相對路徑或抄 token 值即可（敘事已抄進 HTML 註解）。
+  - **沒有 DESIGN.md 但有品牌脈絡**（截圖、UI kit、tokens 檔）：在專案資料夾寫一份新的 `DESIGN.md`（`version: alpha`、quoted hex、frontmatter tokens + Markdown 章節）；交付時告訴使用者「我順手寫了一份 DESIGN.md，未來新 deck / mock 都會 reference 它」。
+  - **零脈絡 + 使用者授權「從零開始」**：把 `assets/house-style.DESIGN.md` 複製進專案資料夾並改檔名成 `DESIGN.md`，至少改一件事（tertiary accent / 字型 / 主標 copy）讓它不是裸體 fallback；交付時明示「這是 cc-designer 的 house style 起點，建議你之後依品牌再校一次」。
+- Input：設計敘事 + starter 選擇 + DESIGN.md 來源判斷
+- Output：一個整潔、自足的資料夾；DESIGN.md 已就位（外部、新寫、或複製改）
+- Validation：`ls` 該資料夾，每個檔案都有存在的理由；HTML 內所有 token 值都能在 DESIGN.md 找到對應
 
 Step 4：早期半成品（early preview）
 - Action：先寫一份骨架 HTML，含：
@@ -237,10 +247,11 @@ Step 7：品質檢查（verification）
   2. 否則：`xdg-open`（Linux）、`open`（macOS）、`start`（Windows）
   3. 主要確認 console 無錯誤、版面無破、互動可點
 - Action：若有錯，先修，再開一次，直到 clean。
+- Action（DESIGN.md lint，可選）：若專案資料夾有 `DESIGN.md`，**先測試** binary 是否可用：`command -v design.md >/dev/null || npx --no-install @google/design.md --version`。可用就跑 `npx @google/design.md@0.1.1 lint <path>/DESIGN.md`；錯誤要修並 re-lint，warning 留在 caveats 提一句，info 忽略；binary 不存在就**安靜跳過**——不要主動 `npm install`（屬於「Ask first」），也不要在 caveats 提缺套件。完整規則見 `references/design-md-integration.md`。
 - Action：clean 後 **才**視為交付完成。
 - Input：v2
-- Output：clean v2
-- Validation：console 全綠、視覺合乎敘事
+- Output：clean v2（必要時含 lint 輸出）
+- Validation：console 全綠、視覺合乎敘事；DESIGN.md lint 無 error（若有跑）
 
 Step 8：極短總結
 - Action：不要長篇介紹你做了什麼——使用者會自己打開看。
@@ -258,8 +269,9 @@ Step 8：極短總結
 1. **主 HTML 檔**：有語意檔名（`Landing Page.html`、`Onboarding Prototype.html`）、可雙擊打開、頂端註解有設計敘事 + 假設
 2. **資料夾結構**：cwd 下的 `design/<project>/`；若已存在非空資料夾，先問覆蓋 / 併用 / 改名；所有圖片 / 字型 / starter 都複製進來，不引用外部路徑
 3. **變體 / 版本**：小變化用 Tweaks；大改版複製為 `<name> v2.html` 保留前版
-4. **Speaker notes**（deck 專屬，僅使用者要求才加）：`<script type="application/json" id="speaker-notes">[...]</script>`；`deck_stage.js` 自動處理 slide change 事件
-5. **交付訊息**：caveats（1-2 句）+ next steps（1-3 個），上限 120 字
+4. **DESIGN.md**（品牌層 source of truth，依 Step 3 三情境決定）：專案上層已有就 reference；本次新寫就放專案資料夾 root；複製自 house style 也放專案資料夾 root。`version: alpha`、quoted hex、frontmatter tokens + Markdown 章節，HTML 內 token 值與 DESIGN.md 一致。
+5. **Speaker notes**（deck 專屬，僅使用者要求才加）：`<script type="application/json" id="speaker-notes">[...]</script>`；`deck_stage.js` 自動處理 slide change 事件
+6. **交付訊息**：caveats（1-2 句）+ next steps（1-3 個），上限 120 字；若本次新寫或複製了 DESIGN.md，明說一句
 
 Formatting：不寫 Lorem ipsum；placeholder 用清楚文字（`[Hero image — needs real photo]`）；不手畫複雜 SVG，用 placeholder 等正式素材；不用 emoji（除非品牌）；文字 ≥ 24px（1920×1080 slide）/ ≥ 12pt（列印）/ ≥ 44px hit target（mobile）；優先用品牌色，必要時用 `oklch()` 延伸同色相。
 
@@ -283,6 +295,12 @@ Do not use：
 - 本 skill 不做遠端發佈、git push、部署——這些請使用者自己處理
 - 不要安裝新 npm 套件——用 CDN pinned 版本 + integrity hash 就好
 - 不要 mock 或重建任何受版權保護的特定商業 UI；若使用者要求仿做其公司產品，需使用者 email 域名證明服務於該公司
+
+Optional dependency — `@google/design.md@0.1.1`：
+- 用途：lint / diff DESIGN.md（Step 7 可選驗證）
+- 偵測：`command -v design.md >/dev/null || npx --no-install @google/design.md --version`
+- 不在的處理：**安靜跳過 lint**；不要主動 `npm install -g`、不要 caveats 提缺套件、不要建議使用者裝（避免散熱噪音）
+- 若使用者主動問「要不要裝」：建議 `npm install -g @google/design.md@0.1.1`（pin alpha 版避免 spec 漂移）
 
 Approval rule（高風險動作前先確認）：
 - 刪除既有檔案（除非明顯是本 session 剛產出的草稿）
@@ -315,6 +333,8 @@ Active tool set：預設保持小——一次 design flow 通常只會用到 Rea
 10. **Label slides & screens**：代表 slide / 螢幕的 element 加 `data-screen-label`（`"01 Title"`、`"02 Agenda"`），1-indexed。
 11. **Copy assets locally**：不 reference 外部路徑，全複製進作品資料夾。
 12. **Speaker notes 只在被要求時才加**。
+13. **DESIGN.md 是品牌層 source of truth**：HTML 內任何 token 值（hex、字型、spacing、rounded、padding）都要能在當前生效的 DESIGN.md 找到對應；發現衝突先改 DESIGN.md 再改 HTML，不要讓兩邊漂移。完整規則見 `references/design-md-integration.md`。
+14. **不要直接 reference skill folder 內的 `assets/house-style.DESIGN.md`**：每個專案要把它複製進專案資料夾並至少改一件事，否則所有 fallback 專案會長一樣。
 
 ## Sub-flows（各類型深入操作）
 
@@ -329,6 +349,8 @@ Active tool set：預設保持小——一次 design flow 通常只會用到 Rea
 - 提問 playbook（何時問、問什麼）：`references/questions.md`
 - Starter components 索引：`references/starter-components.md`
 - 在 Claude Code 預覽的方法：`references/verification.md`
+- **DESIGN.md 整合協定（Step 1/2/3/7 細節）**：`references/design-md-integration.md`
+- House style fallback（複製進專案後改）：`assets/house-style.DESIGN.md`
 - Quality checklist：`references/quality_checklist.md`
 
 <examples>
@@ -368,6 +390,8 @@ Example 2 — 使用者說：「prototype 一個外送 app 的 onboarding」
 | 不同 foundation model 的使用差異 | `references/model-notes.md` |
 | 打包、單一真實來源、eval workflow | `references/distribution.md` |
 | 發佈前 readiness gate | `references/quality_checklist.md` |
+| DESIGN.md 整合協定（Step 1/2/3/7 細節） | `references/design-md-integration.md` |
+| House style fallback（複製進專案後改） | `assets/house-style.DESIGN.md` |
 | Trigger / functional eval 資料 | `assets/evals/evals.json` |
 | Release threshold（canonical） | `assets/evals/regression_gates.json` |
 
