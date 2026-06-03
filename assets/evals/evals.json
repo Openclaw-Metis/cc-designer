@@ -1,9 +1,21 @@
 {
   "skill_name": "cc-designer",
+  "benchmark_metadata_required": [
+    "skill_version",
+    "git_commit",
+    "host",
+    "model",
+    "temperature",
+    "run_timestamp",
+    "grader_version"
+  ],
   "evals": [
     {
       "id": 1,
       "name": "pitch-deck-happy-path",
+      "trigger_class": "direct",
+      "language": "zh",
+      "coverage_tags": ["should-trigger", "happy-path"],
       "prompt": "幫我做一個 8 頁的 pitch deck，介紹我們新 launch 的 AI 寫作助理產品 Quill。受眾是早期 SaaS 投資人，10 分鐘簡報。色調偏 editorial（深色 + 暖白）、字型不要 Inter / Roboto。請輸出可以直接打開的 HTML。",
       "expected_output": "deck_stage.js + index.html 在使用者工作目錄；8 個 <section>；hero / problem / solution / product / traction / market / team / ask；用 Instrument Serif / Space Grotesk / Söhne 等非 default 字型；深色 #0b0b0f 主題；preview 指令給出來",
       "files": [],
@@ -19,6 +31,9 @@
     {
       "id": 2,
       "name": "interactive-prototype-onboarding",
+      "trigger_class": "direct",
+      "language": "mixed",
+      "coverage_tags": ["should-trigger", "happy-path"],
       "prompt": "我要做一個 4-screen 的 iOS onboarding prototype（welcome → permission → profile → first action），可以點按鈕在 screen 之間切換。沒有既有 UI kit，請先問我品牌參考。",
       "expected_output": "先用 AskUserQuestion 問品牌 / UI kit / 風格偏好，再 scaffold；最終輸出 index.html + ios_frame.jsx + 4 個 screen JSX；React 18.3.1 + Babel 7.29.0 pinned；data-screen-label 1-4；用 <IOSDevice> 包 screen；可點切換",
       "files": [],
@@ -36,6 +51,9 @@
     {
       "id": 3,
       "name": "wireframe-design-canvas-3-options",
+      "trigger_class": "direct",
+      "language": "zh",
+      "coverage_tags": ["should-trigger", "edge-case"],
       "prompt": "幫我探索 settings page 的 3 種 wireframe 方向：1) sidebar nav, 2) tab nav, 3) accordion。低保真就好，灰階 + 真 copy + 標註。",
       "expected_output": "design_canvas.jsx + 3 個 DCArtboard；每個有 label 表達 intent（不是 A/B/C）；greyscale 色票；用真實 settings copy 而非 lorem ipsum",
       "files": [],
@@ -50,6 +68,9 @@
     {
       "id": 4,
       "name": "animation-product-launch",
+      "trigger_class": "direct",
+      "language": "zh",
+      "coverage_tags": ["should-trigger", "happy-path"],
       "prompt": "做一個 6 秒的 motion，介紹我們新功能 'Live Cursors'：logo fade in → 標語打字機 → 三個 feature icon 進場 → CTA。給可播放可暫停的 scrubber。",
       "expected_output": "animations.jsx starter + index.html；Stage duration=6；4 個 Sprite 排好時間軸；scrubber 可拖；色彩 / 字型有意圖",
       "files": [],
@@ -64,6 +85,9 @@
     {
       "id": 5,
       "name": "negative-trigger-production-app",
+      "trigger_class": "negative",
+      "language": "zh",
+      "coverage_tags": ["should-not-trigger", "overlap-neighbor"],
       "prompt": "幫我把 src/components/Header.tsx 加一個 dark mode toggle，要符合既有 design system。",
       "expected_output": "不該觸發 cc-designer；應交給 frontend-skill / design-taste-frontend / design-html，因為這是 production code 改動，不是設計探索",
       "files": [],
@@ -75,18 +99,24 @@
     {
       "id": 6,
       "name": "negative-trigger-bug-fix",
+      "trigger_class": "negative",
+      "language": "mixed",
+      "coverage_tags": ["should-not-trigger", "near-miss"],
       "prompt": "我的 Next.js prod build 跑不起來，error 是 Module not found: 'react-icons'，幫我修。",
-      "expected_output": "不該觸發 cc-designer；應交給 investigate / 一般 debugging。",
+      "expected_output": "不該觸發 cc-designer；應交給 investigate / 一般 debugging，因為這是建置錯誤而非設計探索。",
       "files": [],
       "expectations": [
         "skill 不該自我觸發",
-        "與設計探索無關"
+        "與設計探索無關，屬於 build / debugging 任務"
       ]
     },
     {
       "id": 7,
       "name": "ambiguous-design-an-app",
-      "prompt": "幫我設計一個 app",
+      "trigger_class": "indirect",
+      "language": "mixed",
+      "coverage_tags": ["should-trigger", "edge-case", "failure-mode"],
+      "prompt": "幫我設計一個 app 吧，我還沒想清楚要做什麼，你先看著辦給我幾個方向。",
       "expected_output": "立即 AskUserQuestion 問：產品方向、受眾、平台、screen 數、品牌、scope；不要直接生產，避免 slop",
       "files": [],
       "expectations": [
@@ -98,6 +128,9 @@
     {
       "id": 8,
       "name": "deck-with-tweaks",
+      "trigger_class": "direct",
+      "language": "zh",
+      "coverage_tags": ["should-trigger", "happy-path"],
       "prompt": "做一個 6-slide minimalist 簡報，主題是「為什麼我們不再用 OKR」，要能即時切換主色與字型（給 Tweaks）。",
       "expected_output": "deck_stage.js + index.html + Tweaks panel；EDITMODE-BEGIN/END marker；listener 先註冊再宣告 available；切換即時 + localStorage 持久化",
       "files": [],
@@ -107,6 +140,53 @@
         "tweaksPanelStyles 不是 styles",
         "切換即時改 CSS variable",
         "panel 標題叫 'Tweaks'"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "indirect-pitch-from-doc",
+      "trigger_class": "indirect",
+      "language": "zh",
+      "coverage_tags": ["should-trigger"],
+      "prompt": "我們下週要跟高層提一個新點子，我手上只有一份兩頁的 Word 說明，想把它弄得有說服力一點、最好能一頁一頁照著講，你能幫我嗎？",
+      "expected_output": "辨識出這其實是 slide deck 任務（雖然沒說「deck / 簡報」）；先確認頁數 / 場合 / 是否要 speaker notes / 品牌；用 deck_stage.js scaffold 1920×1080 deck；把兩頁 Word 重組成可逐頁講的 sections，而不是塞成一頁",
+      "files": [],
+      "expectations": [
+        "辨識為 slide deck 任務並走 deck workflow",
+        "先用 AskUserQuestion 或明列問題確認場合 / 頁數 / 品牌",
+        "用 deck_stage.js starter 而非手刻 transform: scale",
+        "把 Word 內容重組成逐頁 sections，不是壓成單頁"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "indirect-clickable-flow-en",
+      "trigger_class": "indirect",
+      "language": "en",
+      "coverage_tags": ["should-trigger"],
+      "prompt": "I've got a spec for a new checkout feature and I want something my team can actually click through to understand the flow — ideally it should look like a real screen, not just grey boxes.",
+      "expected_output": "Recognize this as an interactive prototype task (not named directly); ask about platform / existing UI kit / which interactions are real; scaffold React 18.3.1 + Babel 7.29.0 pinned with a device frame; data-screen-label per screen; clickable navigation between steps",
+      "files": [],
+      "expectations": [
+        "Recognize it as an interactive prototype, not a static wireframe",
+        "Ask for platform / UI kit / which flows must be real before building",
+        "Use pinned React + Babel with integrity hashes",
+        "Make screens clickable with labeled data-screen-label"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "negative-css-oneliner-en",
+      "trigger_class": "negative",
+      "language": "en",
+      "coverage_tags": ["should-not-trigger", "near-miss"],
+      "prompt": "How do I vertically and horizontally center a div inside its parent using flexbox? Just need the CSS, nothing else.",
+      "expected_output": "Should NOT start a cc-designer design flow; this is a single CSS question and should be answered directly in chat (display:flex; align-items:center; justify-content:center), per the decision_boundary rule 'single CSS/HTML question - just answer'",
+      "files": [],
+      "expectations": [
+        "Do not start a full design skill flow",
+        "Answer the CSS question directly in chat",
+        "decision_boundary already routes single CSS/HTML questions to a direct answer"
       ]
     }
   ]

@@ -1,0 +1,61 @@
+name: cc-designer
+status: validated
+owner: Allan Yiin
+archetype: executor
+primary_structure_pattern: generator
+lifecycle:
+  created_at: 2026-04-22
+  last_validated_at: 2026-06-03
+  last_released_at: 2026-04-22
+  review_interval_days: 90
+  next_review_due: 2026-09-01
+support:
+  primary_hosts:
+    - claude-code
+  secondary_hosts:
+    - codex-cli
+    - openclaw
+  unsupported_hosts:
+    - chat-no-filesystem
+risk:
+  external_side_effects: false
+  requires_secrets: false
+  data_sensitivity: low
+dependencies:
+  scripts: []
+  references:
+    - references/decks.md
+    - references/prototypes.md
+    - references/animations.md
+    - references/wireframes.md
+    - references/design-md-integration.md
+    - references/quality_checklist.md
+    - references/readiness_report.md
+    - references/migration-governance.md
+registry:
+  namespace: "@design"
+  visibility: public
+  channel: stable
+  reviewers:
+    - design
+    - eval
+  audit_log: references/readiness_report.md
+stewardship:
+  reviewers:
+    - design
+    - eval
+  stale_after_days: 180
+  escalation:
+    stale: needs-maintenance
+    no_owner: orphaned
+portfolio:
+  overlaps_with:
+    - frontend-skill
+  hands_off_to:
+    - frontend-skill
+    - design-consultation
+    - design-review
+  depends_on: []
+  supersedes: []
+  deprecated_by: null
+  shares_tool_contract_with: []

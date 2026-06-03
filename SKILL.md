@@ -1,7 +1,7 @@
 ---
 name: cc-designer
 description: 產出可直接瀏覽器開啟的 HTML 設計成品——slide deck、interactive prototype、motion 動畫、wireframe、design canvas、landing mock。用於「做一份 deck / 簡報」「mock / prototype / wireframe ___」「把 PRD 變成投影片」「探索 ___ 視覺」「依 DESIGN.md 做 ___」等設計探索任務。讀寫 Google Labs Code 的 `DESIGN.md`（單檔 design system tokens）作為品牌層；專案有 DESIGN.md 就遵守，沒有但有品牌脈絡就寫一份。不適用於 Next.js / React production app、後端、Figma / Sketch 原生檔——這類交給 frontend-skill。交付：主 HTML 檔（必要時拆多檔）+ 設計敘事 + 變體 / Tweaks，console 無錯誤。
-version: 2026.4.22
+version: 2026.6.3
 license: MIT
 metadata: {"author":"adapted from Claude.ai Artifacts designer prompt","language":"zh-TW","category":"executor","short-description":"HTML design artifact generator：deck、prototype、animation、wireframe、canvas","structure-pattern":"Generator"}
 ---
@@ -143,65 +143,65 @@ Qualitative：
 
 <workflow>
 
-Step 0：Confirm inputs（理解需求）
-- Action：先掃對話歷史、附檔、cwd 下的既有檔案；若仍不夠決定關鍵方向，再用 `AskUserQuestion`（若 harness 支援）或明列問題。
+Step 0:Confirm inputs（理解需求）
+- Action:先掃對話歷史、附檔、cwd 下的既有檔案；若仍不夠決定關鍵方向，再用 `AskUserQuestion`（若 harness 支援）或明列問題。
 - 問什麼：見 `references/questions.md`——預設要問的類別包含「起點與產品脈絡」「變體數」「Tweaks 偏好」「品牌 / UI kit」「對 novel vs. conservative 的偏好」「最在意 flow / 視覺 / 文案哪一個」「分析 / 文字或圖像密度」。
 - 明顯足夠資訊時不用問：例如「把這張截圖做成互動 prototype」、「用 repo 內 composer UI 重繪一版」。
-- Input：使用者需求 + 已知脈絡
-- Output：確認過的 scope、fidelity、變體數、品牌 / 設計系統來源
-- Validation：能寫出一段「設計假設與脈絡」就算過關
+- Input:使用者需求 + 已知脈絡
+- Output:確認過的 scope、fidelity、變體數、品牌 / 設計系統來源
+- Validation:能寫出一段「設計假設與脈絡」就算過關
 
-Step 1：探索設計脈絡
+Step 1:探索設計脈絡
 - Action（**第一順位**）：用 Glob 在 cwd 與往上 3 層找 `DESIGN.md` / `design.md` / `design-system.md` / `brand.md`。若有就完整讀過——這是品牌層的 source of truth，所有 token 都從它抄；token 引用語法 `{colors.primary}` 要展開成實際 hex 值。
-- Action：若使用者提供了 UI kit / codebase / 截圖 / 連結，先完整讀過——不要只掃檔名。
+- Action:若使用者提供了 UI kit / codebase / 截圖 / 連結，先完整讀過——不要只掃檔名。
   - 代表性路徑：`theme.ts`、`tokens.css`、`colors.ts`、`_variables.scss`、global stylesheet、提到的元件原始碼
   - 用 Grep / Glob 找關鍵 token、字型、間距、圓角
   - 從原始碼抄精確值（hex、spacing、font stack、border radius）
 - 若使用者只給截圖：用 Read（支援圖片）觀察；但 Claude 更擅長從 code 重建，截圖只作輔助
-- 若沒有任何設計脈絡（也沒 DESIGN.md）：**先停下來**，告訴使用者從零開始會產出很一般的結果，請他至少提供參考網站、screenshots、或同意「從零探索」（後者觸發 Step 3 複製 `assets/house-style.DESIGN.md` 流程）
-- Input：檔案、截圖、URL、對話
-- Output：一份「設計觀察」——色盤、字型、間距節奏、元件詞彙、文案語氣、陰影 / 卡片 / 版面模式、密度；若有 DESIGN.md，這份觀察直接從它的 frontmatter + Overview 抽出
-- Validation：能說出 3 個以上你要沿用的既有 pattern；若有 DESIGN.md，能列出至少 5 個會抄進 HTML 的具體 token 值
+- Stop and report（停止並回報）：若零設計脈絡且沒有 DESIGN.md，又未取得「從零探索」授權，就**停止**產出並回報——告訴使用者從零開始會產出很一般的結果，請他至少提供參考網站、screenshots、或明確同意「從零探索」（後者觸發 Step 3 複製 `assets/house-style.DESIGN.md` 流程）。被要求仿製受版權保護的商業 UI 而 email 域名不符時，同樣停止並回報。
+- Input:檔案、截圖、URL、對話
+- Output:一份「設計觀察」——色盤、字型、間距節奏、元件詞彙、文案語氣、陰影 / 卡片 / 版面模式、密度；若有 DESIGN.md，這份觀察直接從它的 frontmatter + Overview 抽出
+- Validation:能說出 3 個以上你要沿用的既有 pattern；若有 DESIGN.md，能列出至少 5 個會抄進 HTML 的具體 token 值
 - See：DESIGN.md 完整協定（如何讀、寫、lint、handoff）見 `references/design-md-integration.md`
 
-Step 2：建立設計系統敘事（think out loud）
-- Action：若 Step 1 找到 DESIGN.md，**直接以它的 `## Overview` 段落 + frontmatter tokens 當敘事種子**——把 Overview 抄成 HTML 檔頂端註解的第一段，再補本次任務的版面 / 節奏決策即可，不要重新發明品牌方向。
-- Action：若沒有 DESIGN.md，在開始寫 code 前**把你要採用的系統大聲講出來**：
+Step 2:建立設計系統敘事（think out loud）
+- Action:若 Step 1 找到 DESIGN.md，**直接以它的 `## Overview` 段落 + frontmatter tokens 當敘事種子**——把 Overview 抄成 HTML 檔頂端註解的第一段，再補本次任務的版面 / 節奏決策即可，不要重新發明品牌方向。
+- Action:若沒有 DESIGN.md，在開始寫 code 前**把你要採用的系統大聲講出來**：
   - 排版決策（幾種背景色、幾種 heading style、哪幾種 layout）
   - 節奏決策（哪幾張用 full-bleed image、哪幾張用純文字、哪幾張放引言）
   - 1-2 個主背景色；色票從品牌來，若太受限再用 `oklch()` 在既有色相上延伸
   - 字型策略：若已有系統用它；若沒有，在 `<style>` 裡用 CSS 變數定義 2-3 組選項並暴露成 Tweaks
-- Action：若使用者授權「從零開始」且沒有 DESIGN.md，敘事改用 `assets/house-style.DESIGN.md` 的 Overview 為起點，並在 Step 3 把它複製進專案資料夾再依任務微調（**禁止**直接 reference skill folder 內的 fallback 檔——每個專案要自己一份）。
-- Input：設計觀察（含 DESIGN.md 若有）
-- Output：一段 3-8 句的「設計敘事」，會變成你 HTML 檔頂端的註解 + 開發過程中的決策依據
-- Validation：使用者看完後能回饋「對，這個方向」或「不，改成 ___」
+- Action:若使用者授權「從零開始」且沒有 DESIGN.md，敘事改用 `assets/house-style.DESIGN.md` 的 Overview 為起點，並在 Step 3 把它複製進專案資料夾再依任務微調（**禁止**直接 reference skill folder 內的 fallback 檔——每個專案要自己一份）。
+- Input:設計觀察（含 DESIGN.md 若有）
+- Output:一段 3-8 句的「設計敘事」，會變成你 HTML 檔頂端的註解 + 開發過程中的決策依據
+- Validation:使用者看完後能回饋「對，這個方向」或「不，改成 ___」
 
-Step 3：建立資料夾結構 + 複製 starter components + 安置 DESIGN.md
-- Action：在 cwd 下建立子資料夾，例如 `design/onboarding-prototype/`。**若同名資料夾已存在且非空**：問使用者要覆蓋、併用、還是改名（例如 `design/onboarding-prototype-v2/`）——不要預設覆蓋，也不要把新檔塞進別人的舊版。
-- Action：只複製實際會用到的 starter（清單見 `references/starter-components.md`），不要整包倒進去。
-- Action：品牌 / UI kit 素材也複製進這個資料夾，**不要 reference 外部路徑**——作品要能獨立 run。
+Step 3:建立資料夾結構 + 複製 starter components + 安置 DESIGN.md
+- Action:在 cwd 下建立子資料夾，例如 `design/onboarding-prototype/`。**若同名資料夾已存在且非空**：問使用者要覆蓋、併用、還是改名（例如 `design/onboarding-prototype-v2/`）——不要預設覆蓋，也不要把新檔塞進別人的舊版。
+- Action:只複製實際會用到的 starter（清單見 `references/starter-components.md`），不要整包倒進去。
+- Action:品牌 / UI kit 素材也複製進這個資料夾，**不要 reference 外部路徑**——作品要能獨立 run。
 - Action（DESIGN.md 三種情境）：
   - **專案上層已有 DESIGN.md**：不要複製進子資料夾——HTML 直接用相對路徑或抄 token 值即可（敘事已抄進 HTML 註解）。
   - **沒有 DESIGN.md 但有品牌脈絡**（截圖、UI kit、tokens 檔）：在專案資料夾寫一份新的 `DESIGN.md`（`version: alpha`、quoted hex、frontmatter tokens + Markdown 章節）；交付時告訴使用者「我順手寫了一份 DESIGN.md，未來新 deck / mock 都會 reference 它」。
   - **零脈絡 + 使用者授權「從零開始」**：把 `assets/house-style.DESIGN.md` 複製進專案資料夾並改檔名成 `DESIGN.md`，至少改一件事（tertiary accent / 字型 / 主標 copy）讓它不是裸體 fallback；交付時明示「這是 cc-designer 的 house style 起點，建議你之後依品牌再校一次」。
-- Input：設計敘事 + starter 選擇 + DESIGN.md 來源判斷
-- Output：一個整潔、自足的資料夾；DESIGN.md 已就位（外部、新寫、或複製改）
-- Validation：`ls` 該資料夾，每個檔案都有存在的理由；HTML 內所有 token 值都能在 DESIGN.md 找到對應
+- Input:設計敘事 + starter 選擇 + DESIGN.md 來源判斷
+- Output:一個整潔、自足的資料夾；DESIGN.md 已就位（外部、新寫、或複製改）
+- Validation:`ls` 該資料夾，每個檔案都有存在的理由；HTML 內所有 token 值都能在 DESIGN.md 找到對應
 
-Step 4：早期半成品（early preview）
-- Action：先寫一份骨架 HTML，含：
+Step 4:早期半成品（early preview）
+- Action:先寫一份骨架 HTML，含：
   - 檔案頂端註解：你的假設、設計敘事、下一步 TODO
   - Placeholder 區塊：圖片用純色塊、icon 用文字標示、內文用真實或接近真實的文字（不要 `Lorem ipsum` 無脈絡拼湊）
   - 至少能跑起來
-- Action：用 `references/verification.md` 描述的方法開一次檔案（見本 SKILL `<tool_rules>`）
-- Action：告訴使用者：「這是初稿，我已做了 ___、___ 假設，接下來會補 ___」
-- Input：資料夾 + 敘事
-- Output：能打開、含 placeholder 的 HTML v0
-- Validation：使用者看到後能快速說「方向對 / 不對」
+- Action:用 `references/verification.md` 描述的方法開一次檔案（見本 SKILL `<tool_rules>`）
+- Action:告訴使用者：「這是初稿，我已做了 ___、___ 假設，接下來會補 ___」
+- Input:資料夾 + 敘事
+- Output:能打開、含 placeholder 的 HTML v0
+- Validation:使用者看到後能快速說「方向對 / 不對」
 
-Step 5：寫 React + Babel components（互動 / 動畫 / 複雜版面才需要）
-- Action：若任務是純靜態 HTML（多數 landing / wireframe / canvas），用原生 HTML + CSS 就好；**不要硬上 React**。
-- Action：若需要 React，必須使用以下**精確**的 script tags（pinned version + integrity hash）——不得改動版本或拿掉 integrity：
+Step 5:寫 React + Babel components（互動 / 動畫 / 複雜版面才需要）
+- Action:若任務是純靜態 HTML（多數 landing / wireframe / canvas），用原生 HTML + CSS 就好；**不要硬上 React**。
+- Action:若需要 React，必須使用以下**精確**的 script tags（pinned version + integrity hash）——不得改動版本或拿掉 integrity：
 
 ```html
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
@@ -209,7 +209,7 @@ Step 5：寫 React + Babel components（互動 / 動畫 / 複雜版面才需要�
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 ```
 
-- Action：component 檔用 `<script type="text/babel" src="..."></script>` 載入，**不要加** `type="module"`——會壞。
+- Action:component 檔用 `<script type="text/babel" src="..."></script>` 載入，**不要加** `type="module"`——會壞。
 - Critical rule 1 — styles 物件命名：全域 scope 的 styles 物件**必須**用 component-specific 名字，例如 `const terminalStyles = { ... }`、`const heroStyles = { ... }`；**嚴禁**寫 `const styles = { ... }`——多檔時名稱撞會直接壞。
 - Critical rule 2 — 多檔 Babel scope：每個 `<script type="text/babel">` 有獨立 scope；要跨檔共用 component，**必須**在檔案末端：
 
@@ -223,44 +223,44 @@ Object.assign(window, {
 
 - Critical rule 3 — 檔案大小：**避免寫 > 1000 行的單一檔案**；拆多個 JSX 用 `<script>` 載入，最後在主檔組合。
 - Critical rule 4 — `scrollIntoView`：**永遠不要用**，會破壞 webapp；改用其他 DOM scroll 方法。
-- Input：敘事 + 骨架
-- Output：可互動的 HTML v1
-- Validation：打開 console 無錯誤
+- Input:敘事 + 骨架
+- Output:可互動的 HTML v1
+- Validation:打開 console 無錯誤
 
-Step 6：加變體 + Tweaks
-- Action：給 3+ 組變體，跨多個維度（版面、色、互動、copy、motion）——從 by-the-book（貼既有 pattern）開始，逐步到 novel（有趣的 metaphor、layout、視覺語言）。
-- Action：變體放在**同一份主 HTML** 的 Tweaks 面板，而不是另開新檔；檔案分叉只有「大改版保留歷史」時才做（用 `v2.html`）。
-- Action：Tweaks 協定完整版見 `references/tweaks.md`——簡述：
+Step 6:加變體 + Tweaks
+- Action:給 3+ 組變體，跨多個維度（版面、色、互動、copy、motion）——從 by-the-book（貼既有 pattern）開始，逐步到 novel（有趣的 metaphor、layout、視覺語言）。
+- Action:變體放在**同一份主 HTML** 的 Tweaks 面板，而不是另開新檔；檔案分叉只有「大改版保留歷史」時才做（用 `v2.html`）。
+- Action:Tweaks 協定完整版見 `references/tweaks.md`——簡述：
   - 先註冊 `message` listener 處理 `__activate_edit_mode` / `__deactivate_edit_mode`
   - 再 `window.parent.postMessage({type: '__edit_mode_available'}, '*')`
   - 變更值時 `window.parent.postMessage({type: '__edit_mode_set_keys', edits: {...}}, '*')`
   - 預設值用 `/*EDITMODE-BEGIN*/{...}/*EDITMODE-END*/` JSON 包裹
   - Panel 標題叫「Tweaks」
-- Action：即使使用者沒要求變體，也預設加 2-3 個有創意的 tweaks（顏色、字型、主 CTA copy）——讓使用者看到更多可能性。
-- Input：v1
-- Output：含變體的 v2
-- Validation：切換 Tweaks 不會 crash；每個變體都有視覺差異
+- Action:即使使用者沒要求變體，也預設加 2-3 個有創意的 tweaks（顏色、字型、主 CTA copy）——讓使用者看到更多可能性。
+- Input:v1
+- Output:含變體的 v2
+- Validation:切換 Tweaks 不會 crash；每個變體都有視覺差異
 
-Step 7：品質檢查（verification）
-- Action：在瀏覽器打開主 HTML 檔：見 `references/verification.md`。優先順序：
+Step 7:品質檢查（verification）
+- Action:在瀏覽器打開主 HTML 檔：見 `references/verification.md`。優先順序：
   1. 若使用者工作環境有 `/browse`（gstack）：用 `$B goto file:///<abs-path>/<name>.html` 加 `$B snapshot`
   2. 否則：`xdg-open`（Linux）、`open`（macOS）、`start`（Windows）
   3. 主要確認 console 無錯誤、版面無破、互動可點
-- Action：若有錯，先修，再開一次，直到 clean。
+- Action:若有錯，先修，再開一次，直到 clean。
 - Action（DESIGN.md lint，可選）：若專案資料夾有 `DESIGN.md`，**先測試** binary 是否可用：`command -v design.md >/dev/null || npx --no-install @google/design.md --version`。可用就跑 `npx @google/design.md@0.1.1 lint <path>/DESIGN.md`；錯誤要修並 re-lint，warning 留在 caveats 提一句，info 忽略；binary 不存在就**安靜跳過**——不要主動 `npm install`（屬於「Ask first」），也不要在 caveats 提缺套件。完整規則見 `references/design-md-integration.md`。
-- Action：clean 後 **才**視為交付完成。
-- Input：v2
-- Output：clean v2（必要時含 lint 輸出）
-- Validation：console 全綠、視覺合乎敘事；DESIGN.md lint 無 error（若有跑）
+- Action:clean 後 **才**視為交付完成。
+- Input:v2
+- Output:clean v2（必要時含 lint 輸出）
+- Validation:console 全綠、視覺合乎敘事；DESIGN.md lint 無 error（若有跑）
 
-Step 8：極短總結
-- Action：不要長篇介紹你做了什麼——使用者會自己打開看。
-- Action：只回：
+Step 8:極短總結
+- Action:不要長篇介紹你做了什麼——使用者會自己打開看。
+- Action:只回：
   - **1-2 句 caveats**（例如：「假設品牌主色是 #D97757；icon 用 placeholder，需要你提供正式素材」）
   - **1-3 個 next steps**（例如：「要我加 dark mode？」「要我拆成 mobile 版本？」「我可以把這版匯出成 PPTX，需要嗎？」）
-- Input：clean v2
-- Output：極短交付訊息
-- Validation：訊息 ≤ 120 字
+- Input:clean v2
+- Output:極短交付訊息
+- Validation:訊息 ≤ 120 字
 
 </workflow>
 
@@ -351,12 +351,19 @@ Active tool set：預設保持小——一次 design flow 通常只會用到 Rea
 - 在 Claude Code 預覽的方法：`references/verification.md`
 - **DESIGN.md 整合協定（Step 1/2/3/7 細節）**：`references/design-md-integration.md`
 - House style fallback（複製進專案後改）：`assets/house-style.DESIGN.md`
-- Quality checklist：`references/quality_checklist.md`
+- 視覺 / 內容人工 QA 檢查清單（review 輔助，非 release gate）：`references/quality_checklist.md`
+- Release evidence / 發佈前 readiness gate（canonical）：`references/readiness_report.md`
+- Migration governance（rename / deprecate / merge / split 規範）：`references/migration-governance.md`
 
 <examples>
 
-Example 1 — 使用者說：「幫我把這份 PRD 做成 8 頁 pitch deck，風格要像 Linear」
+Example 1 — Slide deck（direct trigger）
 
+Input:
+- 使用者說：「幫我把這份 PRD 做成 8 頁 pitch deck，風格要像 Linear」
+- 已知脈絡：PRD 檔在 cwd、簡報是給投資人、未提供 Linear 截圖
+
+Output: 依 workflow 推進的交付軌跡
 - Step 0：先確認 PRD 檔案位置、簡報場合、是否需要 speaker notes、是否有 Linear 的視覺參考
 - Step 1：若使用者沒給 Linear 截圖，請他提供（或授權用既有 brand observations）
 - Step 2：寫敘事——「8 頁，以 Linear 的極簡風為底：白/深灰 + 紫色 accent、Geist Mono 強調、大字 hero + 支持點」
@@ -367,8 +374,13 @@ Example 1 — 使用者說：「幫我把這份 PRD 做成 8 頁 pitch deck，�
 - Step 7：開瀏覽器，確認翻頁、列印 preview 無破
 - Step 8：交付訊息「草稿做好。第 3、5 頁 hero image 是 placeholder，需要你提供素材。要不要我加 speaker notes 或匯出成 PPTX？」
 
-Example 2 — 使用者說：「prototype 一個外送 app 的 onboarding」
+Example 2 — Interactive prototype（direct trigger）
 
+Input:
+- 使用者說：「prototype 一個外送 app 的 onboarding」
+- 已知脈絡：沒有附 codebase / UI kit / 截圖，品牌方向未定
+
+Output: 依 workflow 推進的交付軌跡
 - Step 0：**大量**提問（見 `references/questions.md`）——他有 codebase 嗎？UI kit？幾步驟？要做多少變體？平台 iOS/Android？動畫重要嗎？
 - Step 1：若有 codebase，讀 theme / tokens / 既有元件
 - Step 2：敘事——「4 步 onboarding，ios_frame，紫橘漸層 hero + 大 icon + 單行文案，進度條在頂端」
@@ -388,8 +400,10 @@ Example 2 — 使用者說：「prototype 一個外送 app 的 onboarding」
 | 測試計畫、trigger / functional / ROI、regression gates 細節 | `references/testing-plan.md` |
 | Troubleshooting 症狀對照表 | `references/troubleshooting.md` |
 | 不同 foundation model 的使用差異 | `references/model-notes.md` |
-| 打包、單一真實來源、eval workflow | `references/distribution.md` |
-| 發佈前 readiness gate | `references/quality_checklist.md` |
+| 打包、唯一來源原則、eval workflow | `references/distribution.md` |
+| 發佈前 readiness gate（release evidence，canonical） | `references/readiness_report.md` |
+| 視覺 / 內容人工 QA 檢查清單（review 輔助，非 release gate） | `references/quality_checklist.md` |
+| Migration governance（rename / deprecate / merge / split） | `references/migration-governance.md` |
 | DESIGN.md 整合協定（Step 1/2/3/7 細節） | `references/design-md-integration.md` |
 | House style fallback（複製進專案後改） | `assets/house-style.DESIGN.md` |
 | Trigger / functional eval 資料 | `assets/evals/evals.json` |
