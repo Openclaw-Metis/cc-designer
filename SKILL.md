@@ -3,7 +3,7 @@ name: cc-designer
 description: 產出可直接瀏覽器開啟的 HTML 設計成品——slide deck、interactive prototype、motion 動畫、wireframe、design canvas、landing mock。用於「做一份 deck / 簡報」「mock / prototype / wireframe ___」「把 PRD 變成投影片」「探索 ___ 視覺」「依 DESIGN.md 做 ___」等設計探索任務。讀寫 Google Labs Code 的 `DESIGN.md`（單檔 design system tokens）作為品牌層；專案有 DESIGN.md 就遵守，沒有但有品牌脈絡就寫一份。不適用於 Next.js / React production app、後端、Figma / Sketch 原生檔——這類交給 frontend-skill。交付：主 HTML 檔（必要時拆多檔）+ 設計敘事 + 變體 / Tweaks，console 無錯誤。
 version: 2026.6.3
 license: MIT
-metadata: {"author":"adapted from Claude.ai Artifacts designer prompt","language":"zh-TW","category":"executor","short-description":"HTML design artifact generator：deck、prototype、animation、wireframe、canvas","structure-pattern":"Generator"}
+metadata: {"author":"Openclaw-Metis","language":"zh-TW","category":"executor","short-description":"HTML design artifact generator：deck、prototype、animation、wireframe、canvas","structure-pattern":"Generator"}
 ---
 
 # cc-designer

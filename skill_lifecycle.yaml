@@ -1,6 +1,6 @@
 name: cc-designer
 status: validated
-owner: Allan Yiin
+owner: Openclaw-Metis
 archetype: executor
 primary_structure_pattern: generator
 lifecycle:
