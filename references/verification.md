@@ -59,7 +59,7 @@ cmd.exe /c start file:///C:/Users/.../index.html
 - [ ] 互動可點（prototype）、翻頁可翻（deck）、動畫可播（animation）
 - [ ] Tweaks 切換有效（若有）
 - [ ] Speaker notes 同步（若 deck + notes）
-- [ ] 無 `scrollIntoView` 被觸發（console 若 warn 要修）
+- [ ] 若在 iframe / Claude.ai Artifacts 預覽：確認無 `scrollIntoView` 干擾 host（本地直接開的 HTML 不受此限；不確定預覽環境就改用 `window.scrollTo()` / `element.scrollTop`）
 
 ## 若 console 有錯
 

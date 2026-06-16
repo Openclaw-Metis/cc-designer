@@ -6,7 +6,7 @@ cc-designer 自身沒有 scripts/；打包請從 skill-creator-advanced 呼叫�
 
 ```bash
 python3 ~/.claude/skills/skill-creator-advanced/scripts/package_skill.py \
-  /home/ubuntu/.claude/skills/cc-designer \
+  ~/.claude/skills/cc-designer \
   <out-dir>
 ```
 

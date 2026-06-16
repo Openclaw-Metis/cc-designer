@@ -1,7 +1,7 @@
 ---
 name: cc-designer
 description: 產出可直接瀏覽器開啟的 HTML 設計成品——slide deck、interactive prototype、motion 動畫、wireframe、design canvas、landing mock。用於「做一份 deck / 簡報」「mock / prototype / wireframe ___」「把 PRD 變成投影片」「探索 ___ 視覺」「依 DESIGN.md 做 ___」等設計探索任務。讀寫 Google Labs Code 的 `DESIGN.md`（單檔 design system tokens）作為品牌層；專案有 DESIGN.md 就遵守，沒有但有品牌脈絡就寫一份。不適用於 Next.js / React production app、後端、Figma / Sketch 原生檔——這類交給 frontend-skill。交付：主 HTML 檔（必要時拆多檔）+ 設計敘事 + 變體 / Tweaks，console 無錯誤。
-version: 2026.6.3
+version: 2026.6.16
 license: MIT
 metadata: {"author":"Openclaw-Metis","language":"zh-TW","category":"executor","short-description":"HTML design artifact generator：deck、prototype、animation、wireframe、canvas","structure-pattern":"Generator"}
 ---
@@ -222,7 +222,7 @@ Object.assign(window, {
 ```
 
 - Critical rule 3 — 檔案大小：**避免寫 > 1000 行的單一檔案**；拆多個 JSX 用 `<script>` 載入，最後在主檔組合。
-- Critical rule 4 — `scrollIntoView`：**永遠不要用**，會破壞 webapp；改用其他 DOM scroll 方法。
+- Critical rule 4 — `scrollIntoView`：在 iframe 預覽的 artifact（Claude.ai Artifacts）會干擾 host；本地直接雙擊打開的 HTML 用它沒問題。不確定預覽環境時，預設用 `window.scrollTo()` / `element.scrollTop`（完整說明見下方 Critical rules #4）。
 - Input:敘事 + 骨架
 - Output:可互動的 HTML v1
 - Validation:打開 console 無錯誤
@@ -247,7 +247,7 @@ Step 7:品質檢查（verification）
   2. 否則：`xdg-open`（Linux）、`open`（macOS）、`start`（Windows）
   3. 主要確認 console 無錯誤、版面無破、互動可點
 - Action:若有錯，先修，再開一次，直到 clean。
-- Action（DESIGN.md lint，可選）：若專案資料夾有 `DESIGN.md`，**先測試** binary 是否可用：`command -v design.md >/dev/null || npx --no-install @google/design.md --version`。可用就跑 `npx @google/design.md@0.1.1 lint <path>/DESIGN.md`；錯誤要修並 re-lint，warning 留在 caveats 提一句，info 忽略；binary 不存在就**安靜跳過**——不要主動 `npm install`（屬於「Ask first」），也不要在 caveats 提缺套件。完整規則見 `references/design-md-integration.md`。
+- Action（DESIGN.md lint，可選）：若專案資料夾有 `DESIGN.md`，**先測試** binary 是否可用：`command -v design.md >/dev/null || npx --no-install @google/design.md --version`。可用就跑 `npx @google/design.md@0.1.1 lint <path>/DESIGN.md`；錯誤要修並 re-lint，warning 留在 caveats 提一句，info 忽略；binary 不存在就 graceful skip——不主動 `npm install`（屬「Ask first」），但**要在 caveats 記一句**「Lint 未跑：@google/design.md 未裝」，不要 silent skip（讓使用者知道少了一道 QA）。完整規則見 `references/design-md-integration.md`。
 - Action:clean 後 **才**視為交付完成。
 - Input:v2
 - Output:clean v2（必要時含 lint 輸出）
@@ -299,7 +299,7 @@ Do not use：
 Optional dependency — `@google/design.md@0.1.1`：
 - 用途：lint / diff DESIGN.md（Step 7 可選驗證）
 - 偵測：`command -v design.md >/dev/null || npx --no-install @google/design.md --version`
-- 不在的處理：**安靜跳過 lint**；不要主動 `npm install -g`、不要 caveats 提缺套件、不要建議使用者裝（避免散熱噪音）
+- 不在的處理：graceful skip（不主動 `npm install -g`），但**要在 caveats 記一句**「Lint 未跑：@google/design.md 未裝」——不要 silent skip，使用者要知道少了一道 QA；要不要裝由使用者決定
 - 若使用者主動問「要不要裝」：建議 `npm install -g @google/design.md@0.1.1`（pin alpha 版避免 spec 漂移）
 
 Approval rule（高風險動作前先確認）：
@@ -410,3 +410,9 @@ Output: 依 workflow 推進的交付軌跡
 | Release threshold（canonical） | `assets/evals/regression_gates.json` |
 
 當上述欄位和 `regression_gates.json` 的數字有衝突時，**JSON 是 source of truth**。
+
+### Gate precedence（fail-first）
+
+- **任一 final gate、stage gate 或 policy gate 為 FAIL / BLOCKED 時，結論只能是 FAIL 或 BLOCKED**——不得因為其他項目 PASS 就放行。
+- **局部 PASS 只可列在定位資訊，且必須明確標註不具放行效力**——單項綠燈不是 release 許可，唯有整體 gate 結論才是。
+- Canonical release gate：`references/readiness_report.md` + `python3 <skill-creator-advanced>/scripts/release_gate.py <skill> --stage <draft|publish>`。`draft` 跳過 benchmark；`publish` 需要 live paired benchmark 證據。

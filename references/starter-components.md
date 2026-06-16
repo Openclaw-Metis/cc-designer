@@ -15,12 +15,14 @@
 ## 複製方法（Claude Code）
 
 ```bash
-# 假設使用者工作目錄為 /home/user/design/onboarding-proto/
-cp /home/ubuntu/.claude/skills/cc-designer/assets/starters/ios_frame.jsx \
-   /home/user/design/onboarding-proto/ios_frame.jsx
+# 只複製用得到的 starter。來源 = 這個 skill 自己的 assets/starters/。
+# **不要 hard-code 絕對安裝路徑**——不同 host（Claude Code / Codex CLI / OpenClaw）
+# 的 skills 目錄各不相同。把 $SKILL_DIR 設成本 skill 的根目錄再複製：
+SKILL_DIR="$HOME/.claude/skills/cc-designer"   # ← 依實際 host 調整（或 ~/.agents/skills/cc-designer）
+DEST="./design/onboarding-proto"                # ← 使用者實際專案資料夾（相對 cwd，不要寫死絕對路徑）
 
-cp /home/ubuntu/.claude/skills/cc-designer/assets/starters/deck_stage.js \
-   /home/user/design/onboarding-proto/deck_stage.js
+cp "$SKILL_DIR/assets/starters/ios_frame.jsx"  "$DEST/"
+cp "$SKILL_DIR/assets/starters/deck_stage.js"  "$DEST/"
 ```
 
 或用 Write 把 starter 內容寫進目標位置（不一定要 cp）。

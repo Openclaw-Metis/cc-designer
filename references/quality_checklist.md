@@ -4,7 +4,7 @@
 
 ## Final gate
 
-- Current version reviewed: `2026.4.22` (DESIGN.md integration pass, 2026-04-22)
+- Current version reviewed: `2026.6.16`（本檔為人工 QA 輔助；canonical 機械 release 證據見 `references/readiness_report.md`。以下詳列證據為 2026.4.22 輪歷史紀錄）
 - Overall status: **PASS (with 1 accepted exception: `README.md` in skill folder)**
 - Blocking issues: 無
 - Evidence / commands run (本輪 2026-04-22):
@@ -99,7 +99,7 @@
 
 ## Maintenance
 
-- [x] version bumped：`2026.4.22`（DESIGN.md integration）
+- [x] version bumped：`2026.6.16`（前次 `2026.4.22` DESIGN.md integration）
 - [x] changes documented：commit message + Discord reply（在 skill folder 外）
 - [x] evals 存於 `assets/evals/evals.json`（已同步 case 2 / 3 的新 API 名稱）
 - [x] regression gates 定於 `assets/evals/regression_gates.json`：
@@ -116,22 +116,22 @@
 
 ```bash
 # 1) format check
-python3 /home/ubuntu/.claude/skills/skill-creator-advanced/scripts/format_check.py \
-  /home/ubuntu/.claude/skills/cc-designer
+python3 ~/.claude/skills/skill-creator-advanced/scripts/format_check.py \
+  ~/.claude/skills/cc-designer
 # → 1 error (README.md inside skill folder) — accepted exception
 
 # 2) quick validate
-python3 /home/ubuntu/.claude/skills/skill-creator-advanced/scripts/quick_validate.py \
-  /home/ubuntu/.claude/skills/cc-designer
+python3 ~/.claude/skills/skill-creator-advanced/scripts/quick_validate.py \
+  ~/.claude/skills/cc-designer
 # → Skill is valid!
 
 # 3) skill references
-python3 /home/ubuntu/.claude/skills/skill-creator-advanced/scripts/audit_skill_references.py \
-  /home/ubuntu/.claude/skills/cc-designer
+python3 ~/.claude/skills/skill-creator-advanced/scripts/audit_skill_references.py \
+  ~/.claude/skills/cc-designer
 # → Skill reference audit passed: 0 issues across 15 source file(s)
 
 # 4) unreferenced files
-python3 /home/ubuntu/.claude/skills/skill-creator-advanced/scripts/audit_unreferenced_files.py \
-  /home/ubuntu/.claude/skills/cc-designer
+python3 ~/.claude/skills/skill-creator-advanced/scripts/audit_unreferenced_files.py \
+  ~/.claude/skills/cc-designer
 # → Unreferenced file audit passed: 0 issues
 ```
