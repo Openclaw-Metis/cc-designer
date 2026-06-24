@@ -13,7 +13,7 @@
 - **無脈絡的 emoji**——除非品牌 / 設計系統本身用 emoji，否則不放；先用 placeholder（純色塊 + 文字標示）。
 - **圓角容器 + 左邊色條 accent**——Notion-like card pattern 被濫用到變 slop。
 - **用 SVG 自己畫插圖**——Claude 畫的 custom SVG illustration 99% 是 slop。用 placeholder 或 asset。
-- **過度使用的字型**——Inter、Roboto、Arial、Fraunces、system-ui 是 AI slop 警訊。用有個性的替代：Space Grotesk、Manrope、Geist、Instrument Serif、Commissioner、JetBrains Mono、IBM Plex。
+- **過度使用的字型**——Inter、Roboto、Arial、system-ui 是 AI slop 警訊。用有個性的替代：Space Grotesk、Manrope、Geist、Instrument Serif、Fraunces、Commissioner、JetBrains Mono、IBM Plex。
 - **Data slop**——亂塞數字、icon、stats 充氣場：`87% 使用者很滿意` `10x 速度` 沒意義且沒出處，刪掉。
 - 無理由的 grid 線、無理由的小 hover state、無理由的動畫——每個視覺元素要有 intent。
 

@@ -159,7 +159,7 @@ function TextSprite({
   x = 0, y = 0,
   size = 48,
   color = '#111',
-  font = 'Inter, system-ui, sans-serif',
+  font = 'system-ui, sans-serif', // override per brand; don't ship Inter/Roboto/Arial (SKILL.md rule #8)
   weight = 600,
   entryDur = 0.45,
   exitDur = 0.35,
@@ -434,7 +434,7 @@ function Stage({
         display: 'flex', flexDirection: 'column',
         alignItems: 'center',
         background: '#0a0a0a',
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: 'system-ui, sans-serif',
       }}
     >
       {/* Canvas area — vertically centered in remaining space */}
@@ -553,7 +553,7 @@ function PlaybackBar({ time, duration, playing, onPlayPause, onReset, onSeek, on
 
       borderRadius: 8,
       color: '#f6f4ef',
-      fontFamily: 'Inter, system-ui, sans-serif',
+      fontFamily: 'system-ui, sans-serif',
       userSelect: 'none',
       flexShrink: 0,
     }}>

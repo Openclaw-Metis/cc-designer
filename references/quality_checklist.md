@@ -4,7 +4,7 @@
 
 ## Final gate
 
-- Current version reviewed: `2026.6.16`（本檔為人工 QA 輔助；canonical 機械 release 證據見 `references/readiness_report.md`。以下詳列證據為 2026.4.22 輪歷史紀錄）
+- Current version reviewed: `2026.6.24`（本檔為人工 QA 輔助；canonical 機械 release 證據見 `references/readiness_report.md`。以下詳列證據為 2026.4.22 輪歷史紀錄）
 - Overall status: **PASS (with 1 accepted exception: `README.md` in skill folder)**
 - Blocking issues: 無
 - Evidence / commands run (本輪 2026-04-22):
@@ -99,7 +99,7 @@
 
 ## Maintenance
 
-- [x] version bumped：`2026.6.16`（前次 `2026.4.22` DESIGN.md integration）
+- [x] version bumped：`2026.6.24`（前次 `2026.6.16`；本輪 skill-optimizer pass：de-Fraunce + DESIGN.md/landing evals + animations 去 Inter）
 - [x] changes documented：commit message + Discord reply（在 skill folder 外）
 - [x] evals 存於 `assets/evals/evals.json`（已同步 case 2 / 3 的新 API 名稱）
 - [x] regression gates 定於 `assets/evals/regression_gates.json`：

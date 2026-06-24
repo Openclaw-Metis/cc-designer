@@ -113,7 +113,7 @@ window.addEventListener('message', (e) => {
 ## 字型
 
 - 若已有系統：用系統字型（Geist Mono、Söhne、IBM Plex、Space Grotesk 等）
-- 若沒有：**不要**用 Inter / Roboto / Arial / Fraunces / system-ui 作為主字——這些是 AI slop 常見字
+- 若沒有：**不要**用 Inter / Roboto / Arial / system-ui 作為主字——這些是 AI slop 常見字
 - 候選：JetBrains Mono、Space Grotesk、Manrope、Fraktur display、Crimson Pro、Instrument Serif、Commissioner
 - Web fonts：用 `<link>` 載入 Google Fonts 或 fontshare；別把字型檔複製進 deck folder
 

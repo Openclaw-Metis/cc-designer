@@ -188,6 +188,58 @@
         "Answer the CSS question directly in chat",
         "decision_boundary already routes single CSS/HTML questions to a direct answer"
       ]
+    },
+    {
+      "id": 12,
+      "name": "design-md-reuse-existing",
+      "trigger_class": "direct",
+      "language": "zh",
+      "coverage_tags": ["should-trigger", "happy-path", "design-md"],
+      "prompt": "我們專案 root 已經有一份 DESIGN.md，幫我照它做一個 5 頁的產品更新 deck，給內部 all hands 用。",
+      "expected_output": "Step 1 先用 Glob 在 cwd 與往上 3 層找到 DESIGN.md 並完整讀；frontmatter tokens 當 source of truth，{colors.*} 等引用展開成實際 hex 寫進 HTML；Step 2 以 DESIGN.md ## Overview 當設計敘事種子，不重新發明品牌方向；Step 0 跳過已被 DESIGN.md 回答的品牌 / 色 / 字型問題；用 deck_stage.js scaffold 5 頁 1920×1080 deck",
+      "files": [],
+      "expectations": [
+        "用 Glob 在 cwd 與往上 3 層找 DESIGN.md（含 design.md / design-system.md / brand.md 變體）",
+        "讀進 DESIGN.md frontmatter tokens 當 source of truth，不再問主色 / 字型",
+        "{colors.*} 等 token 引用展開成實際 hex 值寫進 HTML",
+        "以 DESIGN.md ## Overview 當設計敘事種子，不重新發明品牌方向",
+        "HTML 內所有 token 值都能對應回 DESIGN.md",
+        "用 deck_stage.js（web component）做 5 頁 deck"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "design-md-write-from-brand-input",
+      "trigger_class": "direct",
+      "language": "mixed",
+      "coverage_tags": ["should-trigger", "happy-path", "design-md"],
+      "prompt": "這是我們的品牌主色 #0B5FFF 和 logo（附圖），但我們沒有 design system 檔。幫我 mock 一個產品首頁，順便把品牌定下來。",
+      "expected_output": "辨識為『有 brand input 但無 DESIGN.md』情境 → 在 Step 2 / 3 於 design/<project>/ 寫一份新的 DESIGN.md（version: alpha、quoted hex \"#0B5FFF\"、frontmatter tokens + Markdown 章節含 Overview / Colors / Typography / Do's and Don'ts）；HTML token 值與 DESIGN.md 一致；不直接 reference skill folder 內的 house-style fallback；交付訊息明說『順手寫了一份 DESIGN.md』",
+      "files": [],
+      "expectations": [
+        "辨識為『有品牌脈絡但無 DESIGN.md』情境",
+        "在 design/<project>/ 寫一份新的 DESIGN.md（不是 reference skill folder 的 house-style）",
+        "frontmatter hex 加雙引號（\"#0B5FFF\"）避免 YAML 數字 / boolean 誤判",
+        "DESIGN.md 含必填章節：Overview / Colors / Typography / Do's and Don'ts",
+        "HTML 內 token 值與新寫的 DESIGN.md 一致",
+        "交付訊息明說新寫了 DESIGN.md"
+      ]
+    },
+    {
+      "id": 14,
+      "name": "near-miss-landing-mock-vs-production",
+      "trigger_class": "indirect",
+      "language": "mixed",
+      "coverage_tags": ["should-trigger", "overlap-neighbor", "near-miss"],
+      "prompt": "幫我做一個 SaaS 產品的 landing page。",
+      "expected_output": "landing page 同時落在 cc-designer（standalone 可瀏覽 mock / 視覺探索）與 frontend-skill / design-taste-frontend（production repo code）的邊界。應先釐清意圖：是要可直接打開看方向的 HTML 視覺稿（→ cc-designer 繼續），還是要寫進既有 repo 的 production 前端（→ 交給 frontend-skill / design-taste-frontend）。確認是 mock / 探索後才走 cc-designer flow，不要預設直接進 codebase",
+      "files": [],
+      "expectations": [
+        "辨識 landing page 是與 frontend-skill / design-taste-frontend 重疊的邊界案例",
+        "先釐清：standalone 可瀏覽 mock（cc-designer）vs production repo 前端（frontend-skill）",
+        "若是進既有 repo 的 production code → 建議交給 frontend-skill，不自行接手",
+        "若是視覺稿 / 探索 → 正常走 cc-designer，產出可直接打開的 HTML"
+      ]
     }
   ]
 }

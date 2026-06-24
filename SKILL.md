@@ -1,7 +1,7 @@
 ---
 name: cc-designer
 description: 產出可直接瀏覽器開啟的 HTML 設計成品——slide deck、interactive prototype、motion 動畫、wireframe、design canvas、landing mock。用於「做一份 deck / 簡報」「mock / prototype / wireframe ___」「把 PRD 變成投影片」「探索 ___ 視覺」「依 DESIGN.md 做 ___」等設計探索任務。讀寫 Google Labs Code 的 `DESIGN.md`（單檔 design system tokens）作為品牌層；專案有 DESIGN.md 就遵守，沒有但有品牌脈絡就寫一份。不適用於 Next.js / React production app、後端、Figma / Sketch 原生檔——這類交給 frontend-skill。交付：主 HTML 檔（必要時拆多檔）+ 設計敘事 + 變體 / Tweaks，console 無錯誤。
-version: 2026.6.16
+version: 2026.6.24
 license: MIT
 metadata: {"author":"Openclaw-Metis","language":"zh-TW","category":"executor","short-description":"HTML design artifact generator：deck、prototype、animation、wireframe、canvas","structure-pattern":"Generator"}
 ---
@@ -328,7 +328,7 @@ Active tool set：預設保持小——一次 design flow 通常只會用到 Rea
 5. **Fixed-size 內容（deck、motion video）必須用內建 scaling**——直接用 `deck_stage.js`（web component），不手刻 `transform: scale()`。
 6. **單檔 > 1000 行要拆**——多個 JSX 用 `<script>` 載入，在主檔組合。
 7. **Scale 基準**：1920×1080 slide 文字 ≥ 24px；列印 ≥ 12pt；mobile hit target ≥ 44px。
-8. **No AI slop tropes**：避免狂 gradient 背景、emoji（除非品牌用）、「圓角容器 + 左邊色條 accent」樣板、自畫 SVG 插圖、Inter / Roboto / Arial / Fraunces 這類 overused 字型。
+8. **No AI slop tropes**：避免狂 gradient 背景、emoji（除非品牌用）、「圓角容器 + 左邊色條 accent」樣板、自畫 SVG 插圖、Inter / Roboto / Arial 這類 overused 字型。
 9. **No filler content**：每個元素都要有存在的理由；區塊看起來空是設計問題，用版面解決不是亂塞。
 10. **Label slides & screens**：代表 slide / 螢幕的 element 加 `data-screen-label`（`"01 Title"`、`"02 Agenda"`），1-indexed。
 11. **Copy assets locally**：不 reference 外部路徑，全複製進作品資料夾。
