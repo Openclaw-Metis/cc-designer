@@ -2,6 +2,8 @@
 
 在 Claude Code / OpenClaw / 其他具備檔案系統的 coding agent 環境中，用 HTML 直接產出設計成品的 skill。
 
+目前版本：`2026.8.29`
+
 適合的產物：
 - slide deck / 簡報
 - interactive prototype
@@ -21,21 +23,26 @@
 
 ```text
 cc-designer/
-├─ SKILL.md
 ├─ README.md
 ├─ LICENSE
-├─ assets/
-│  ├─ evals/
-│  └─ starters/
-└─ references/
+├─ release/
+│  └─ evidence-2026.8.29.json
+└─ cc-designer/
+   ├─ SKILL.md
+   ├─ skill_lifecycle.yaml
+   ├─ policies/
+   ├─ assets/
+   │  ├─ evals/
+   │  └─ starters/
+   └─ references/
 ```
 
 ## 主要內容
 
-- `SKILL.md`: skill 主規格、觸發條件、workflow、tool rules
-- `assets/starters/`: 可複用的設計起手式元件
-- `assets/evals/`: eval 與 regression gate
-- `references/`: deck、prototype、animation、wireframe、verification 等補充規範
+- `cc-designer/SKILL.md`: skill 主規格、觸發條件、workflow、tool rules
+- `cc-designer/assets/starters/`: 可複用的設計起手式元件
+- `cc-designer/assets/evals/`: eval 與 regression gate
+- `cc-designer/references/`: deck、prototype、animation、wireframe、verification 等補充規範
 
 ## 何時用
 
@@ -54,17 +61,19 @@ cc-designer/
 
 ## 安裝
 
-把資料夾放到 Claude skills 目錄，例如：
+clone repository 後，把內層 skill package 放到 host 的 skills 目錄：
 
 ```bash
+git clone https://github.com/Openclaw-Metis/cc-designer.git
 mkdir -p ~/.claude/skills
-cp -R cc-designer ~/.claude/skills/cc-designer
+cp -R cc-designer/cc-designer ~/.claude/skills/cc-designer
 ```
 
-或直接 clone：
+Codex / Agent Skills 可改用對應目錄：
 
 ```bash
-git clone https://github.com/Openclaw-Metis/cc-designer.git ~/.claude/skills/cc-designer
+mkdir -p ~/.agents/skills
+cp -R cc-designer/cc-designer ~/.agents/skills/cc-designer
 ```
 
 ## 使用方式

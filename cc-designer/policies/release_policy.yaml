@@ -1,0 +1,13 @@
+release_policy:
+  required_checks:
+    - format
+    - references
+    - unreferenced_files
+    - lifecycle
+    - eval_assets
+    - security
+  block_if:
+    - has_todo
+    - missing_owner
+    - stale_audit
+    - gate_failed_or_blocked

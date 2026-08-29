@@ -1,0 +1,41 @@
+{
+  "skill_name": "cc-designer",
+  "skill_version": "2026.8.29",
+  "release_date": "2026-08-29",
+  "evidence_level": "E2",
+  "source_base_commit": "9b5b82b",
+  "release_tag": "v2026.8.29",
+  "validator": {
+    "name": "SkillOps Studio",
+    "version": "3.7.0"
+  },
+  "gates": {
+    "revise": "PASS",
+    "package": "PASS",
+    "publish": "PASS",
+    "security": "PASS",
+    "format_findings": 0,
+    "reference_findings": 0,
+    "orphan_findings": 0
+  },
+  "starter_smoke": {
+    "status": "PASS",
+    "browser": "Chromium 151.0.7922.34",
+    "jsx_starters": 6,
+    "verified_exports": 40,
+    "console_errors": 0
+  },
+  "package": {
+    "filename": "cc-designer.skill",
+    "size_bytes": 99031,
+    "sha256": "4a8caeb7bec315dec8bc665493cf5575bfbbd99893bb1962b13851a9ba77a072"
+  },
+  "benchmark": {
+    "status": "SKIPPED",
+    "reason": "No frozen live paired model harness; no live quality, latency, token, pass-rate, or ROI improvement claim is made."
+  },
+  "rollback": {
+    "tag": "v2026.6.24",
+    "commit": "9b5b82b"
+  }
+}

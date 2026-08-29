@@ -5,10 +5,10 @@ archetype: executor
 primary_structure_pattern: generator
 lifecycle:
   created_at: 2026-04-22
-  last_validated_at: '2026-06-24'
-  last_released_at: '2026-06-24'
+  last_validated_at: '2026-08-29'
+  last_released_at: '2026-08-29'
   review_interval_days: 90
-  next_review_due: '2026-09-22'
+  next_review_due: '2026-11-27'
 support:
   primary_hosts:
   - claude-code

@@ -201,6 +201,7 @@
       "expectations": [
         "用 Glob 在 cwd 與往上 3 層找 DESIGN.md（含 design.md / design-system.md / brand.md 變體）",
         "讀進 DESIGN.md frontmatter tokens 當 source of truth，不再問主色 / 字型",
+        "原地沿用上層 DESIGN.md，不複製到 design/<project>/，也不擅自修改既有 design system",
         "{colors.*} 等 token 引用展開成實際 hex 值寫進 HTML",
         "以 DESIGN.md ## Overview 當設計敘事種子，不重新發明品牌方向",
         "HTML 內所有 token 值都能對應回 DESIGN.md",

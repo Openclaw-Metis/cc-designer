@@ -43,6 +43,11 @@ Test case 3：No context, should stop
 - When：執行
 - Then：skill 應停下來要求 UI kit / 截圖 / 品牌資料，而非憑空畫
 
+Test case 4：Reuse existing DESIGN.md without duplication
+- Given：cwd 或上層 3 層內已有 DESIGN.md，使用者要求依品牌製作 deck / mock
+- When：執行 cc-designer flow
+- Then：完整讀取並原地沿用 DESIGN.md；HTML 展開實際 token 並在頂端註解來源；不把 DESIGN.md 複製進 `design/<project>/`，也不在未授權時修改既有 design system
+
 ## Performance comparison
 
 - Baseline（無 skill）：Claude 會產出單一 HTML，常常缺 integrity hash、styles 命名撞、沒有 Tweaks、沒複製 assets、console 有錯誤
@@ -55,7 +60,7 @@ Test case 3：No context, should stop
 
 ## Regression gates（與 `assets/evals/regression_gates.json` 同步）
 
-目前閾值見 `assets/evals/regression_gates.json`，由 `~/.claude/skills/skill-creator-advanced/scripts/check_regression_gates.py` 執行（cc-designer 自身不帶 scripts/）。發版條件：
+目前閾值見 `assets/evals/regression_gates.json`。只有具 frozen baseline / candidate、scorer 與完整 metadata 的 live paired harness 才套用這些閾值；deterministic release readiness 由 SkillOps Studio `stage_gate.py` / `release_gate.py` 執行。cc-designer 自身不攜帶 validator scripts。發版條件：
 
 | 指標 | 閾值 | 資料來源 |
 |---|---|---|

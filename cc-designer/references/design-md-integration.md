@@ -15,7 +15,7 @@ cc-designer 既讀也寫 [DESIGN.md](https://github.com/google-labs-code/design.
 | 對比 / 無障礙錯誤要靠 reviewer 才抓得出來 | 手動估或漏 | `npx @google/design.md lint` 直接吐 JSON，contrast / token 引用 / structural 問題都列 |
 | handoff 給 frontend-skill 要重整理 design tokens | 每次都要重抄一份 design system | 直接交一份 DESIGN.md，frontend-skill 拿來轉 Tailwind config / CSS variables |
 
-對齊使用者的 feedback memory（[feedback_deck_editorial_typography.md](../../../projects/-home-ubuntu/memory/feedback_deck_editorial_typography.md)）：每份 deck 探索新視覺方向；但**品牌**該穩定。DESIGN.md 把這兩件事拆乾淨。
+這套分層對齊既有使用者回饋：每份 deck 可以探索新的視覺方向，但**品牌**應保持穩定。DESIGN.md 把這兩件事拆乾淨，且不依賴特定 host 的外部 memory 路徑。
 
 ---
 
@@ -59,8 +59,9 @@ design/<project>/
 如果使用者**完全沒提供 brand input**且授權「從零開始」：套用 [house-style.DESIGN.md](../assets/house-style.DESIGN.md) 當基底，**複製進設計資料夾**並標註「derived from cc-designer house style — please review」。不要直接 reference skill folder 的路徑（作品要能獨立 run）。
 
 如果使用者**已經提供 DESIGN.md**：
-- 不覆寫他的版本
-- 若你在做的過程中產生新 component 規格（例：deck 用了一個新 callout 樣式），追加到「Components」section 並在交付訊息提一句「新增了 `callout-quote` component 進 DESIGN.md，覺得不對請刪」
+- 原地讀取並沿用，不複製到 `design/<project>/`，也不覆寫既有版本
+- HTML 內展開實際 token 值，並在檔案頂端註解記錄來源 DESIGN.md 的相對位置
+- 若過程產生新 component 規格（例：deck 新增 callout 樣式），先把建議與影響說明給使用者；只有使用者授權修改既有 design system 時才追加到「Components」section
 
 ---
 
@@ -224,7 +225,7 @@ cc-designer 的責任**到** DESIGN.md 為止；不寫 Tailwind config / framewo
 | Step 0（理解需求） | 在問問題前，先掃 DESIGN.md，避免問已經有答案的問題 |
 | Step 1（探索設計脈絡） | 若有 DESIGN.md → load 進來；無 → 走原本流程（讀 codebase / 截圖） |
 | Step 2（寫設計敘事） | 把 DESIGN.md Overview prose 當敘事的起點；新發明的 token 暫存等 Step 3 寫進去 |
-| Step 3（建資料夾） | 若使用者沒提供 → 寫一份 DESIGN.md 到 `design/<project>/`；有提供 → 複製進來 |
+| Step 3（建資料夾） | 若使用者沒提供 → 寫一份 DESIGN.md 到 `design/<project>/`；已有上層 DESIGN.md → 原地沿用、HTML 展開 token，不複製 |
 | Step 7（verification） | 跑 lint；error 阻擋交付，warning 進 caveats |
 | Step 8（極短總結） | caveats 提：「DESIGN.md 已建/更新；要不要我順手做 design tokens JSON 給 frontend-skill 用」 |
 
