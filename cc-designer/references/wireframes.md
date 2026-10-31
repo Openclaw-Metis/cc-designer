@@ -40,15 +40,15 @@
 
 何時用：探索顏色、字型、版面、icon 風格、logo variant、wireframe direction——並列一頁好比較，Figma 風 pan/zoom。
 
-用 `assets/starters/design_canvas.jsx`——提供可 pan / 可 zoom 的畫布 + artboards + post-it 註解。
+用 `assets/starters/design_canvas.jsx`——提供可 pan / 可 zoom 的畫布 + artboards + post-it 註解。它是 JSX，交付前要內嵌，步驟見 `prototypes.md` 的「內嵌成交付檔」。
 
 ### 互動 vs. 靜態
 
 - 外層 `<DesignCanvas>` 拖曳與縮放都內建：
-  - 滑鼠按住拖 → pan
-  - `wheel` + `ctrl/cmd` 或 trackpad pinch → zoom
-  - `wheel` 單純 → pan
-- 父容器要 `position: relative; overflow: hidden`；本 starter 預設給你
+  - 在底色區塊按住左鍵拖，或在任何位置按中鍵拖 → pan
+  - 滑鼠滾輪、`ctrl` + 滾輪或 trackpad pinch → zoom
+  - trackpad 雙指滑動 → pan
+- 畫布預設填滿 viewport（`100vh` × `100vw`），`overflow` 與定位都已內建
 - `minScale` / `maxScale` 可調（預設 0.1 ~ 8）
 
 ### Component 形狀

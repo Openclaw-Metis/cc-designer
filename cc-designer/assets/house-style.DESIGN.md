@@ -5,7 +5,7 @@ description: cc-designer 的預設品牌層。當使用者完全沒提供 brand 
 colors:
   primary: "#141414"
   secondary: "#5C5C5C"
-  tertiary: "#B25C3C"
+  tertiary: "#A34F30"
   neutral: "#F2EEE8"
   surface: "#FFFFFF"
   surface-muted: "#F8F5F0"
@@ -15,7 +15,7 @@ colors:
   border-strong: "#1F1F1F"
   link: "#7A2E14"
   success: "#2F6B3F"
-  warning: "#A65A14"
+  warning: "#9C5412"
   error: "#8B1F1F"
 typography:
   display-lg:
@@ -31,13 +31,13 @@ typography:
     lineHeight: 1.1
     letterSpacing: -0.015em
   headline-lg:
-    fontFamily: Söhne
+    fontFamily: Geist
     fontSize: 32px
     fontWeight: 600
     lineHeight: 1.2
     letterSpacing: -0.01em
   headline-md:
-    fontFamily: Söhne
+    fontFamily: Geist
     fontSize: 24px
     fontWeight: 600
     lineHeight: 1.3
@@ -52,13 +52,13 @@ typography:
     fontWeight: 400
     lineHeight: 1.55
   label-md:
-    fontFamily: Söhne
+    fontFamily: Geist
     fontSize: 13px
     fontWeight: 500
     lineHeight: 1.3
     letterSpacing: 0.02em
   label-caps:
-    fontFamily: Söhne Mono
+    fontFamily: Geist Mono
     fontSize: 11px
     fontWeight: 500
     lineHeight: 1.2
@@ -93,14 +93,14 @@ components:
     rounded: "{rounded.sm}"
     padding: 12px 20px
   button-tertiary:
-    backgroundColor: transparent
+    backgroundColor: "{colors.neutral}"
     textColor: "{colors.tertiary}"
     padding: 8px 12px
   callout-quote:
     backgroundColor: "{colors.surface-muted}"
     textColor: "{colors.primary}"
     padding: 24px
-    rounded: "{rounded.md}"
+    rounded: "{rounded.sm}"
   card:
     backgroundColor: "{colors.surface}"
     rounded: "{rounded.md}"
@@ -125,29 +125,32 @@ cc-designer 的 fallback house style。**不是給單一品牌用的**——是�
 
 - **Primary (#141414)**：深墨色（不是純黑——避免螢幕刺眼）。所有 heading + 正文 + 主要 UI 邊框
 - **Secondary (#5C5C5C)**：中灰，metadata、caption、disabled state
-- **Tertiary (#B25C3C)**：磚紅色 accent。**唯一互動色**——hover、CTA、引文邊條、focus ring。整個專案不該超過 5 個地方用到
+- **Tertiary (#A34F30)**：磚紅色 accent。**唯一互動色**——hover、CTA、引文邊條、focus ring。整個專案不該超過 5 個地方用到
 - **Neutral (#F2EEE8)**：偏暖米白，page background。**不要用純白**當底色——太冷
 - **Surface (#FFFFFF)**：純白，只給卡片、彈窗、需要從 neutral 上浮起的元素
 - **Border (#E0DBD3)**：淺米色邊框；border-strong (#1F1F1F) 給需要強調的分隔線
 - **Link (#7A2E14)**：比 tertiary 更深的紅，用於正文超連結；hover 切到 tertiary
 - **Success / Warning / Error**：低飽和度的綠、琥珀、暗紅；不要用螢光的「Tailwind green-500」
 
-對比驗證：
-- primary on neutral：14.8:1（AAA）
-- secondary on neutral：5.4:1（AA）
-- tertiary on surface：4.8:1（AA，剛過）—— 大字才用，body 用 link 顏色
-- on-primary on primary：21:1（AAA）
+對比驗證（WCAG 公式實算）：
+- primary on neutral：15.9:1（AAA）
+- secondary on neutral：5.8:1（AA）
+- tertiary on neutral：4.9:1（AA）；on surface：5.7:1（AA）
+- link on neutral：8.2:1（AAA）
+- on-primary on primary：18.4:1（AAA）
 
 ## Typography
 
 兩個字型家族 + 一個等寬，**不超過三家**：
 
 - **Fraunces**（display-lg / display-md）：variable serif，hero 與 section 主標。負字距、輕字重，刻意做出「報紙標題」的氣質
-- **Söhne**（headline-lg / headline-md / label-md）：sans，UI 標題與標籤。中性、現代，不搶 serif 的戲
+- **Geist**（headline-lg / headline-md / label-md）：sans，UI 標題與標籤。中性、現代，不搶 serif 的戲
 - **Source Serif 4**（body-lg / body-md）：正文襯線。長行距、舒適閱讀
-- **Söhne Mono**（label-caps）：metadata、技術資訊、timestamps。大寫 + 寬字距
+- **Geist Mono**（label-caps）：metadata、技術資訊、timestamps。大寫 + 寬字距
 
-**為什麼不用 Inter / Roboto / Arial / Helvetica**：這些字型出現在 AI 生成的設計裡頻率太高，已經成為「平庸」訊號。Söhne 與 Fraunces 在開源 / paid font 圈裡同級代表「有挑過」。如果使用者環境沒有授權 Söhne，fallback 用 [Inter Tight](https://rsms.me/inter/) 或 [Geist Sans](https://vercel.com/font)——還是比 Inter 本體有辨識度。
+四個字型都能從 Google Fonts 載入，使用時加對應的 `<link>`。它們都沒有中文字形；繁中內容在字型堆疊接 Noto Serif TC（display、body）與 Noto Sans TC（headline、label）。
+
+**為什麼不用 Inter / Roboto / Arial / Helvetica**：這些字型出現在 AI 生成的設計裡頻率太高，已經成為「平庸」訊號。
 
 字級階梯（major-third 1.25 為主）：64 → 48 → 32 → 24 → 18 → 16 → 13 → 11。display 與 body 中間故意留大跳，hero 才有重量。
 
@@ -184,7 +187,7 @@ cc-designer 的 fallback house style。**不是給單一品牌用的**——是�
 - `button-primary`：方角（rounded.sm = 2px）、深墨底、白字。hover 切到 tertiary 磚紅
 - `button-secondary`：白底、墨字；視為「次要動作」，不該與 primary 同畫面競爭視覺
 - `button-tertiary`：transparent 底、磚紅字；給「閱讀更多」這類弱動作
-- `callout-quote`：surface-muted 底、左邊條 tertiary、padding 24px。引文 / 重要提示用這個，**不是**用 emoji 框
+- `callout-quote`：surface-muted 底、上下 border-strong 細線、padding 24px。引文 / 重要提示用這個，**不是**用 emoji 框，也不用圓角容器加左邊色條
 - `card`：白底、6px 圓角、24px padding；不加陰影
 - `chip`：full radius、surface-muted 底；給標籤、metadata、filter
 
@@ -196,7 +199,7 @@ cc-designer 的 fallback house style。**不是給單一品牌用的**——是�
 - **大量留白**：section 之間 ≥ 48px；hero 上下 ≥ 96px
 - **用真實內容當 placeholder**：「[Hero image — 需要實際照片]」比 `[圖片]` 好，比 `Lorem ipsum` 好十倍
 - **限制 accent 色用量**：tertiary 在一個畫面 ≤ 3 處出現
-- **lint 過再交付**：`npx @google/design.md lint DESIGN.md`
+- **lint 過再交付**：`npx --no-install --package @google/design.md designmd lint DESIGN.md`
 
 **Don't**
 - ❌ 不用 Inter / Roboto / Arial / Helvetica / Open Sans / Lato 當 body 字型——AI-default tell

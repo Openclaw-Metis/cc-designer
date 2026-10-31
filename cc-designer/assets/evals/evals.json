@@ -17,14 +17,14 @@
       "language": "zh",
       "coverage_tags": ["should-trigger", "happy-path"],
       "prompt": "幫我做一個 8 頁的 pitch deck，介紹我們新 launch 的 AI 寫作助理產品 Quill。受眾是早期 SaaS 投資人，10 分鐘簡報。色調偏 editorial（深色 + 暖白）、字型不要 Inter / Roboto。請輸出可以直接打開的 HTML。",
-      "expected_output": "deck_stage.js + index.html 在使用者工作目錄；8 個 <section>；hero / problem / solution / product / traction / market / team / ask；用 Instrument Serif / Space Grotesk / Söhne 等非 default 字型；深色 #0b0b0f 主題；preview 指令給出來",
+      "expected_output": "deck_stage.js + index.html 在使用者工作目錄；8 個 <section>；hero / problem / solution / product / traction / market / team / ask；用 Instrument Serif / Space Grotesk 等 Google Fonts 載得到的非 default 字型；深色 #0b0b0f 主題；回報實際驗證結果",
       "files": [],
       "expectations": [
         "創建 index.html + deck_stage.js（從 starter 複製）",
         "8 張 section",
         "用 1-2 個 system decision 字型，不是 Inter / Roboto / Arial",
         "1920×1080 設計尺寸",
-        "提供 gstack /browse 或 xdg-open / open 預覽指令",
+        "對 HTML 跑 verify_artifact.mjs 並回報實際結果",
         "顯示 visual decisions 摘要"
       ]
     },
@@ -35,7 +35,7 @@
       "language": "mixed",
       "coverage_tags": ["should-trigger", "happy-path"],
       "prompt": "我要做一個 4-screen 的 iOS onboarding prototype（welcome → permission → profile → first action），可以點按鈕在 screen 之間切換。沒有既有 UI kit，請先問我品牌參考。",
-      "expected_output": "先用 AskUserQuestion 問品牌 / UI kit / 風格偏好，再 scaffold；最終輸出 index.html + ios_frame.jsx + 4 個 screen JSX；React 18.3.1 + Babel 7.29.0 pinned；data-screen-label 1-4；用 <IOSDevice> 包 screen；可點切換",
+      "expected_output": "先用 AskUserQuestion 問品牌 / UI kit / 風格偏好，再 scaffold；最終輸出 index.src.html + ios_frame.jsx + 4 個 screen JSX，以及 inline_jsx.mjs 內嵌後的交付檔；React 18.3.1 + Babel 7.29.0 pinned；data-screen-label 1-4；用 <IOSDevice> 包 screen；可點切換",
       "files": [],
       "expectations": [
         "先發 AskUserQuestion，不要自行假設品牌",
@@ -45,7 +45,8 @@
         "每個 screen 有 data-screen-label",
         "跨檔 component 用 Object.assign(window, {...}) 共享",
         "不要用 type=\"module\"",
-        "不要在 styles 變數重名"
+        "不要在 styles 變數重名",
+        "交付檔由 inline_jsx.mjs 內嵌，雙擊開啟不空白"
       ]
     },
     {
@@ -89,11 +90,11 @@
       "language": "zh",
       "coverage_tags": ["should-not-trigger", "overlap-neighbor"],
       "prompt": "幫我把 src/components/Header.tsx 加一個 dark mode toggle，要符合既有 design system。",
-      "expected_output": "不該觸發 cc-designer；應交給 frontend-skill / design-taste-frontend / design-html，因為這是 production code 改動，不是設計探索",
+      "expected_output": "不該觸發 cc-designer；應交給 design-taste-frontend 或一般實作流程，因為這是 production code 改動，不是設計探索",
       "files": [],
       "expectations": [
         "skill 不該自我觸發",
-        "若意外觸發，SKILL.md 的 decision_boundary 應建議轉給 frontend-skill"
+        "若意外觸發，依 Routing boundaries 轉給 production 前端"
       ]
     },
     {
@@ -103,7 +104,7 @@
       "language": "mixed",
       "coverage_tags": ["should-not-trigger", "near-miss"],
       "prompt": "我的 Next.js prod build 跑不起來，error 是 Module not found: 'react-icons'，幫我修。",
-      "expected_output": "不該觸發 cc-designer；應交給 investigate / 一般 debugging，因為這是建置錯誤而非設計探索。",
+      "expected_output": "不該觸發 cc-designer；這是建置錯誤而非設計探索，走一般 debugging。",
       "files": [],
       "expectations": [
         "skill 不該自我觸發",
@@ -121,7 +122,7 @@
       "files": [],
       "expectations": [
         "先發 AskUserQuestion",
-        "至少問 5 個 key questions（品牌 / scope / platform / variation / novelty）",
+        "一輪問完，最多 5 題，涵蓋品牌 / scope / platform / variation / novelty",
         "不要假裝已有 context 直接做"
       ]
     },
@@ -139,6 +140,7 @@
         "EDITMODE-BEGIN / EDITMODE-END marker 包合法 JSON",
         "tweaksPanelStyles 不是 styles",
         "切換即時改 CSS variable",
+        "雙擊開啟時頁面上有 Tweaks 入口",
         "panel 標題叫 'Tweaks'"
       ]
     },
@@ -171,7 +173,8 @@
         "Recognize it as an interactive prototype, not a static wireframe",
         "Ask for platform / UI kit / which flows must be real before building",
         "Use pinned React + Babel with integrity hashes",
-        "Make screens clickable with labeled data-screen-label"
+        "Make screens clickable with labeled data-screen-label",
+        "Deliver the inlined HTML so a double click does not open a blank page"
       ]
     },
     {
@@ -233,13 +236,104 @@
       "language": "mixed",
       "coverage_tags": ["should-trigger", "overlap-neighbor", "near-miss"],
       "prompt": "幫我做一個 SaaS 產品的 landing page。",
-      "expected_output": "landing page 同時落在 cc-designer（standalone 可瀏覽 mock / 視覺探索）與 frontend-skill / design-taste-frontend（production repo code）的邊界。應先釐清意圖：是要可直接打開看方向的 HTML 視覺稿（→ cc-designer 繼續），還是要寫進既有 repo 的 production 前端（→ 交給 frontend-skill / design-taste-frontend）。確認是 mock / 探索後才走 cc-designer flow，不要預設直接進 codebase",
+      "expected_output": "landing page 同時落在 cc-designer（standalone 可瀏覽 mock / 視覺探索）與 design-taste-frontend（production repo code）的邊界。應先釐清意圖：是要可直接打開看方向的 HTML 視覺稿（→ cc-designer 繼續），還是要寫進既有 repo 的 production 前端（→ 交給 design-taste-frontend）。確認是 mock / 探索後才走 cc-designer flow，不要預設直接進 codebase",
       "files": [],
       "expectations": [
-        "辨識 landing page 是與 frontend-skill / design-taste-frontend 重疊的邊界案例",
-        "先釐清：standalone 可瀏覽 mock（cc-designer）vs production repo 前端（frontend-skill）",
-        "若是進既有 repo 的 production code → 建議交給 frontend-skill，不自行接手",
+        "辨識 landing page 是與 design-taste-frontend 重疊的邊界案例",
+        "先釐清：standalone 可瀏覽 mock（cc-designer）vs production repo 前端（design-taste-frontend）",
+        "若是進既有 repo 的 production code → 建議交給 design-taste-frontend，不自行接手",
         "若是視覺稿 / 探索 → 正常走 cc-designer，產出可直接打開的 HTML"
+      ]
+    },
+    {
+      "id": 15,
+      "name": "negative-editable-pptx",
+      "trigger_class": "negative",
+      "language": "zh",
+      "coverage_tags": ["should-not-trigger", "overlap-neighbor", "action-object-contrast"],
+      "prompt": "幫我做一份 12 頁的業務簡報 .pptx，要套公司的 PowerPoint 母片，之後業務同仁會自己在 PowerPoint 裡改內容。",
+      "expected_output": "不該觸發 cc-designer；交付物是可編輯的 .pptx 且要套母片，應交給 slide-studio。與 deck 正例共用「簡報」這個物件，但要的是不同格式與後續編輯方式",
+      "files": [],
+      "expectations": [
+        "skill 不該自我觸發",
+        "若意外觸發，依 Routing boundaries 轉給 slide-studio，不產出 HTML deck 冒充 .pptx"
+      ]
+    },
+    {
+      "id": 16,
+      "name": "near-miss-deck-format-unclear",
+      "trigger_class": "indirect",
+      "language": "zh",
+      "coverage_tags": ["should-trigger", "overlap-neighbor", "near-miss"],
+      "prompt": "下個月新產品發表，幫我做一份簡報。",
+      "expected_output": "簡報同時落在 cc-designer（HTML deck）與 slide-studio（.pptx）的邊界。先用一題確認成品要可開啟的 HTML 還是要在 PowerPoint 編輯，同一輪補問受眾、頁數與品牌，總題數不超過 5；確認是 HTML 才走 deck flow",
+      "files": [],
+      "expectations": [
+        "把成品格式列為第一個問題",
+        "一輪問完，最多 5 題",
+        "確認要 .pptx 時轉給 slide-studio",
+        "確認要 HTML 時走 deck workflow"
+      ]
+    },
+    {
+      "id": 17,
+      "name": "react-prototype-opens-by-double-click",
+      "trigger_class": "direct",
+      "language": "zh",
+      "coverage_tags": ["should-trigger", "regression", "failure-mode"],
+      "prompt": "用 iOS 外框做一個 3 步驟的記帳 app 引導 prototype，要拆成幾個 JSX 檔，我會直接雙擊 HTML 給同事看。品牌色 #0B5FFF，其他你決定。",
+      "expected_output": "index.src.html 以 text/babel src 載入多個 JSX，交付檔由 inline_jsx.mjs 內嵌；對交付檔跑 verify_artifact.mjs 得到 PASS，rootChildren > 0；交付的是內嵌後的檔案",
+      "files": [],
+      "expectations": [
+        "開發入口與交付檔分開，交付檔由 inline_jsx.mjs 產生",
+        "驗證對象是交付檔，不是 index.src.html",
+        "verify_artifact.mjs 回 PASS，沒有 CORS 或 blank-render 錯誤",
+        "交付的 HTML 不含 <script type=\"text/babel\" src=...>"
+      ]
+    },
+    {
+      "id": 18,
+      "name": "no-browser-reports-unverified",
+      "trigger_class": "direct",
+      "language": "zh",
+      "coverage_tags": ["should-trigger", "regression", "failure-mode"],
+      "prompt": "這台機器沒有裝 Chrome 或 Edge。幫我做一份 5 頁的讀書會簡報 HTML，主題是《原子習慣》，用灰階就好。",
+      "expected_output": "verify_artifact.mjs 回 UNVERIFIED 與 browser_not_found；沒有其他可讀 console 的工具時，交付訊息第一句寫「console 未驗證」，並給檔案絕對路徑",
+      "files": [],
+      "expectations": [
+        "實際執行驗證工具並讀取結果",
+        "不把 UNVERIFIED 說成通過，也不宣稱 console 無錯誤",
+        "用 open / start 開檔不算驗證",
+        "交付訊息第一句寫明 console 未驗證"
+      ]
+    },
+    {
+      "id": 19,
+      "name": "negative-proofread-existing-deck",
+      "trigger_class": "negative",
+      "language": "zh",
+      "coverage_tags": ["should-not-trigger", "overlap-neighbor", "action-object-contrast"],
+      "prompt": "這份 deck.html 是我上週做好的，幫我檢查裡面的錯字和中英文標點就好，版面不要動。",
+      "expected_output": "不該啟動 cc-designer 的設計流程；物件是 deck，但動作是校稿，直接修文字即可，不重做版面、不加 Tweaks 或變體",
+      "files": [],
+      "expectations": [
+        "skill 不該自我觸發",
+        "不改版面、不加 Tweaks、不建立 design 資料夾"
+      ]
+    },
+    {
+      "id": 20,
+      "name": "commercial-ui-clone-stops",
+      "trigger_class": "direct",
+      "language": "mixed",
+      "coverage_tags": ["should-trigger", "edge-case", "failure-mode"],
+      "prompt": "幫我 1:1 重現 Stripe Dashboard，logo、文案跟版面都一模一樣，我要拿去當我們產品的 demo。",
+      "expected_output": "進入 commercial UI 規則：沒有工作 email 網域或品牌授權資料可確認使用者服務於該公司時，停止 1:1 重建，改提原創方案，可借資訊密度與排版節奏等氣質",
+      "files": [],
+      "expectations": [
+        "不產出 1:1 重建的 UI、logo 或文案",
+        "說明需要的授權依據",
+        "提供原創替代方案"
       ]
     }
   ]

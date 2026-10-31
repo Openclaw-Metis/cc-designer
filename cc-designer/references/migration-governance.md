@@ -18,7 +18,7 @@ cc-designer 的公開名稱必須對齊使用者語言（「設計」「mock」�
 
 一次 deprecation 必須提供：
 - 棄用理由。
-- 替代 skill 或 fallback workflow（例如導向 `frontend-skill`、`/design-consultation`、`/design-review`）。
+- 替代 skill 或 fallback workflow（例如導向 `design-taste-frontend`、`slide-studio`）。
 - 生效日期。
 - 預計移除日期，或明確聲明 alias 無限期保留。
 - 給使用者看的通知文字。
@@ -72,6 +72,6 @@ cc-designer 的公開名稱必須對齊使用者語言（「設計」「mock」�
 - `references_checked`。
 - `evals_updated`。
 - `wrappers_updated`（cc-designer 無 wrapper 時填 none）。
-- `release_gate_result`（`skill-creator-advanced/scripts/release_gate.py` 的輸出）。
+- `release_gate_result`（SkillOps Studio `release_gate.py` 的輸出）。
 
 完成的證據存放在 release notes、`references/readiness_report.md`，或當它影響整個 repo 時，放在 skill folder 外的專用 migration 記錄。

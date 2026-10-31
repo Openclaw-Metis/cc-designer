@@ -20,7 +20,7 @@
 ## Variants and interaction
 
 - [ ] 變體按意圖命名並跨至少兩個維度呈現實質差異，不只是換 accent color。
-- [ ] Tweaks listener、available 訊息、defaults 與 persistence 順序正確；關閉 Tweaks 後控制 UI 完全隱藏。
+- [ ] Tweaks listener、available 訊息、defaults 與 persistence 順序正確；雙擊開啟時有入口，面板關閉後控制 UI 完全隱藏。
 - [ ] prototype 的必要 flow 可完成；非必要互動明確標為 placeholder，不製造虛假的完整度。
 - [ ] motion 可播放、暫停與拖曳；一個 moment 有足夠閱讀時間，動態只服務關鍵信息。
 

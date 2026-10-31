@@ -5,10 +5,10 @@ archetype: executor
 primary_structure_pattern: generator
 lifecycle:
   created_at: 2026-04-22
-  last_validated_at: '2026-08-29'
-  last_released_at: '2026-08-29'
+  last_validated_at: '2026-10-31'
+  last_released_at: '2026-10-31'
   review_interval_days: 90
-  next_review_due: '2026-11-27'
+  next_review_due: '2027-01-29'
 support:
   primary_hosts:
   - claude-code
@@ -22,7 +22,9 @@ risk:
   requires_secrets: false
   data_sensitivity: low
 dependencies:
-  scripts: []
+  scripts:
+  - scripts/inline_jsx.mjs
+  - scripts/verify_artifact.mjs
   references:
   - references/decks.md
   - references/prototypes.md
@@ -50,11 +52,13 @@ stewardship:
     no_owner: orphaned
 portfolio:
   overlaps_with:
-  - frontend-skill
+  - design-taste-frontend
+  - frontend-design
+  - slide-studio
   hands_off_to:
-  - frontend-skill
-  - design-consultation
-  - design-review
+  - design-taste-frontend
+  - frontend-design
+  - slide-studio
   depends_on: []
   supersedes: []
   deprecated_by: null

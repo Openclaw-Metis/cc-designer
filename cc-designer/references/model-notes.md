@@ -21,12 +21,11 @@
 2. 骨架 + 早期預覽（v0，含 placeholder）
 3. React components + 互動（v1）
 4. Tweaks + 變體（v2）
-5. 驗證 + 交付（打開瀏覽器、console 檢查、極短交付訊息）
+5. 驗證 + 交付（跑驗證工具、看截圖、極短交付訊息）
 
 每一回合結束讓使用者確認方向，再進下一回合。單 mega prompt 的失敗率明顯較高——中途方向跑偏就來不及修。
 
 ## Token / cost 提醒
 
-- Starter 複製是 filesystem 操作，不會 inflate conversation token
-- 但 early preview（Step 4）打開瀏覽器確認時若用 `/browse`，snapshot 會回灌 context；只在必要 checkpoint 用
-- 深度 reasoning model（Opus）跑完整 5 回合約 30-60k input tokens；Sonnet-style 約 20-40k
+- Starter 用 shell 複製，不要讀進對話再寫出去
+- 截圖與瀏覽器 snapshot 會回灌 context；只在必要 checkpoint 用

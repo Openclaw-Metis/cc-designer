@@ -5,14 +5,16 @@ Motion 是設計的一部分——不是裝飾。做動畫時你是 animator，�
 ## 選動畫工具
 
 優先順序：
-1. `assets/starters/animations.jsx` — Stage + Sprite + `PlaybackBar` + Easing + `useTime()` / `useSprite()` + `interpolate()` / `animate()`
+1. `assets/starters/animations.jsx` — Stage + Sprite + `PlaybackBar` + Easing + `useTime()` / `useTimeline()` / `useSprite()` + `interpolate()` / `animate()`
 2. CSS transitions / React state（簡單 hover、state 變化）
 3. Popmotion / Framer Motion 等外部 lib — **只在** starter 真的覆蓋不到時才退回
 
 ## Stage + Sprite 模型（starter 提供）
 
+`animations.jsx` 是 JSX，交付前要內嵌，步驟見 `prototypes.md` 的「內嵌成交付檔」。
+
 ```jsx
-<Stage width={1920} height={1080} duration={6} autoPlay loop>
+<Stage width={1920} height={1080} duration={6} persistKey="launch-motion">
   <Sprite start={0} end={2}>
     <FadeInTitle />
   </Sprite>
@@ -27,15 +29,17 @@ Motion 是設計的一部分——不是裝飾。做動畫時你是 animator，�
 </Stage>
 ```
 
-- `<Stage width height duration autoPlay loop showControls>` — 自動 scale、內建 `PlaybackBar`；可用 `showControls={false}` 收起來
-- `<Sprite start end keepMounted>` — 顯示在 `[start, end)` 秒；`keepMounted` 會保留但 opacity=0（避免 enter 動畫重跑）
-- `<TextSprite>` / `<ImageSprite>` / `<RectSprite>` — 三個便利元件，內建 enter / exit + 位移；props 見檔案開頭
+- `<Stage width height duration background fps loop autoplay persistKey>` — 自動 scale、內建 `PlaybackBar`；`loop`、`autoplay` 預設開啟。播放位置會存進 `localStorage`，同一台機器有多支動畫時給各自的 `persistKey`
+- `<Sprite start end keepMounted>` — 在 `[start, end]` 秒內渲染；`keepMounted` 讓 sprite 在區段外仍保持掛載（避免 enter 動畫重跑），要不要隱藏由子元件讀 `useSprite().visible` 決定。children 也可以是 `({ localTime, progress }) => ...`
+- `<TextSprite>` / `<ImageSprite>` / `<RectSprite>` — 三個便利元件，內建 enter / exit + 位移；props 見各元件定義上方。`TextSprite` 預設字型是 `system-ui`，要傳 `font`
 - Hooks：
-  - `useTime()` → 取 Stage 內全域 `time`、`duration`、`playing`
-  - `useSprite()` → 本 sprite 的 `localTime`、`progress`（0–1）、`duration`
-- `interpolate([inputs], [outputs], easing?)` → **curry**，回傳 `(t) => value`；不是舊版 `interpolate(t, inputs, outputs)`
-- `animate([{ at, value, easing }, ...])` → 多 keyframe interpolator
-- `Easing`：`linear`、`easeInQuad/OutQuad/InOutQuad`、`easeInCubic/OutCubic/InOutCubic`、`easeInOutQuart/Quint/Sine/Expo`；**沒有** `Easing.spring`
+  - `useTime()` → 目前秒數（數字）
+  - `useTimeline()` → `{ time, duration, playing }`
+  - `useSprite()` → 本 sprite 的 `localTime`、`progress`（0–1）、`duration`、`visible`
+- `interpolate([inputs], [outputs], ease?)` → **curry**，回傳 `(t) => value`；多 keyframe 用這個，`ease` 可傳單一函式或每段一個的陣列
+- `animate({ from, to, start, end, ease })` → **curry**，回傳 `(t) => value`；單段 tween，不接受 keyframe 陣列
+- `clamp(v, min, max)`
+- `Easing`：`linear`、Quad / Cubic / Quart / Expo / Sine 各有 `easeIn*`、`easeOut*`、`easeInOut*`，另有 `easeInBack`、`easeOutBack`、`easeInOutBack`、`easeOutElastic`；**沒有** `Easing.spring`
 
 ## 自訂 sprite — 靠 hook + interpolate
 
@@ -76,10 +80,9 @@ function FadeInTitle() {
 
 - **影片風格**（video-style HTML）：有 PlaybackBar、可 play/pause、時間軸清楚 → Stage + Sprite
 - **互動風格**：使用者觸發才動 → React state + CSS transition
-- 混合：用 Stage 做主動畫，但有 Tweaks 可 pause / 拖曳到特定時刻看該 frame
+- 混合：用 Stage 做主動畫，由內建 `PlaybackBar` pause / 拖曳到特定時刻看該 frame
 
 ## 匯出
 
-- 影片？用瀏覽器 screen recording 錄 Stage 播放
-- GIF？同上後 convert（ffmpeg）
-- 不做進階 MP4 匯出——這份 skill 不負責影片 encode
+- 本 skill 交付可播放的 HTML，不輸出影片檔
+- 使用者要 MP4 / GIF 時，交給影片 skill（host 有安裝時）；沒有時建議用瀏覽器錄影錄 Stage 播放

@@ -13,7 +13,7 @@
 - **無脈絡的 emoji**——除非品牌 / 設計系統本身用 emoji，否則不放；先用 placeholder（純色塊 + 文字標示）。
 - **圓角容器 + 左邊色條 accent**——Notion-like card pattern 被濫用到變 slop。
 - **用 SVG 自己畫插圖**——Claude 畫的 custom SVG illustration 99% 是 slop。用 placeholder 或 asset。
-- **過度使用的字型**——Inter、Roboto、Arial、system-ui 是 AI slop 警訊。用有個性的替代：Space Grotesk、Manrope、Geist、Instrument Serif、Fraunces、Commissioner、JetBrains Mono、IBM Plex。
+- **過度使用的字型**——Inter、Roboto、Arial、system-ui 是 AI slop 警訊。用有個性、且 Google Fonts 載得到的替代：Space Grotesk、Manrope、Geist、Instrument Serif、Fraunces、Commissioner、JetBrains Mono、IBM Plex Sans。Söhne 等商業字型沒有公開 CDN，只有使用者提供授權字型檔時才用。
 - **Data slop**——亂塞數字、icon、stats 充氣場：`87% 使用者很滿意` `10x 速度` 沒意義且沒出處，刪掉。
 - 無理由的 grid 線、無理由的小 hover state、無理由的動畫——每個視覺元素要有 intent。
 
@@ -45,6 +45,8 @@
 - Single 字型多 weight / italic（現代感）
 - Mono + serif（editorial）
 - 不要 3+ 字型同 page
+
+繁中內容：上述 Latin 字型沒有中文字形，字型堆疊要接 Noto Serif TC 或 Noto Sans TC（皆可由 Google Fonts 載入），例如 `font-family: "Fraunces", "Noto Serif TC", serif`。否則中文會退回各作業系統的預設字，同一份設計在不同機器長得不一樣。
 
 ## Rhythm / 節奏
 

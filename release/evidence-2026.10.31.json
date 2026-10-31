@@ -1,0 +1,75 @@
+{
+  "skill_name": "cc-designer",
+  "skill_version": "2026.10.31",
+  "release_date": "2026-10-31",
+  "evidence_level": "E2",
+  "source_base_commit": "d39be3f",
+  "release_tag": "v2026.10.31",
+  "validator": {
+    "name": "SkillOps Studio",
+    "version": "3.11.0"
+  },
+  "gates": {
+    "baseline_revise": "FAIL",
+    "baseline_publish": "FAIL",
+    "revise": "PASS",
+    "package": "PASS",
+    "publish": "PASS",
+    "security": "PASS",
+    "format_findings": 0,
+    "reference_findings": 0,
+    "orphan_findings": 0,
+    "security_findings": 0,
+    "instruction_control_warnings": 18,
+    "instruction_control_observations": 2
+  },
+  "regression_tests": {
+    "status": "PASS",
+    "command": "node --test tests/artifact_tools.test.mjs",
+    "passed": 28,
+    "failed": 0,
+    "node": "24.22.1",
+    "browser": "Chrome 156.0.8078.74",
+    "platform": "Windows 11"
+  },
+  "negative_controls": {
+    "unbuilt_react_prototype": "FAIL as expected: external-jsx-src, CORS, blank-render",
+    "v2026_8_29_docs_against_starter_props": "13 phantom props reported"
+  },
+  "end_to_end_trial": {
+    "status": "PASS",
+    "artifacts": ["deck with Tweaks", "multi-file React prototype"],
+    "console_errors": 0
+  },
+  "starter_smoke": {
+    "status": "PASS",
+    "protocol": "file",
+    "browser": "Chrome 156.0.8078.74",
+    "jsx_starters": 6,
+    "console_errors": 0
+  },
+  "design_md_lint": {
+    "package": "@google/design.md@0.4.0",
+    "house_style": {
+      "errors": 0,
+      "warnings": 5,
+      "warning_rule": "orphaned-tokens"
+    }
+  },
+  "package": {
+    "filename": "cc-designer.skill",
+    "size_bytes": 115693,
+    "sha256": "4ff1b799db0108309719a8b0e3b52c8ff717f2054b346554c512056d51663633"
+  },
+  "benchmark": {
+    "status": "SKIPPED",
+    "reason": "No frozen live paired model harness; new eval cases were not replayed against a model, so no live quality, trigger accuracy, latency, token, pass-rate, or ROI improvement claim is made."
+  },
+  "not_applicable": {
+    "audit_runtime_independence": "Checks SkillOps Studio governance assets only; outside the stage gate and this skill's release policy."
+  },
+  "rollback": {
+    "tag": "v2026.8.29",
+    "commit": "d39be3f"
+  }
+}
