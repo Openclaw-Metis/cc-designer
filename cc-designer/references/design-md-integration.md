@@ -12,8 +12,8 @@ cc-designer 既讀也寫 [DESIGN.md](https://github.com/google-labs-code/design.
 |---|---|---|
 | 同一品牌跨 session 視覺漂移 | 每次重做的色票 / 字型常會跑掉，因為脈絡只活在 HTML 註解裡 | 開檔就 load token + prose，敘事與 token 都復用 |
 | 「探索新方向」與「保持品牌一致」的張力 | 兩件事都壓在 HTML 註解，互相打架 | 品牌層在 DESIGN.md（穩定），deck-level 視覺 thesis 在 HTML 註解（每次新） |
-| 對比 / 無障礙錯誤要靠 reviewer 才抓得出來 | 手動估或漏 | `npx @google/design.md lint` 直接吐 JSON，contrast / token 引用 / structural 問題都列 |
-| handoff 給 frontend-skill 要重整理 design tokens | 每次都要重抄一份 design system | 直接交一份 DESIGN.md，frontend-skill 拿來轉 Tailwind config / CSS variables |
+| 對比 / 無障礙錯誤要靠 reviewer 才抓得出來 | 手動估或漏 | `designmd lint` 直接吐 JSON，contrast / token 引用 / structural 問題都列 |
+| handoff 給 production 前端要重整理 design tokens | 每次都要重抄一份 design system | 直接交一份 DESIGN.md，用 `designmd export` 轉 Tailwind 或 CSS variables |
 
 這套分層對齊既有使用者回饋：每份 deck 可以探索新的視覺方向，但**品牌**應保持穩定。DESIGN.md 把這兩件事拆乾淨，且不依賴特定 host 的外部 memory 路徑。
 
@@ -122,18 +122,18 @@ rounded:                 # 選填
 
 ## Lint 整合（Step 7 verification 加掛）
 
-**Optional dependency**：`@google/design.md@0.1.1`（pin alpha 版本）
+**Optional dependency**：`@google/design.md@0.4.0`（pin 版本）
 
 **安裝**（使用者授權後才動）：
 
 ```bash
-npm install -g @google/design.md@0.1.1
+npm install -g "@google/design.md@0.4.0"
 ```
 
-**執行**：
+**執行**：一律走 `designmd` 這個 bin。`npx @google/design.md` 用的是 `.md` 結尾的 bin 名，在 Windows 會卡住。
 
 ```bash
-npx @google/design.md lint /path/to/design/<project>/DESIGN.md --format json
+npx --no-install --package @google/design.md designmd lint /path/to/design/<project>/DESIGN.md --format json
 ```
 
 **輸出範例**：
@@ -143,16 +143,18 @@ npx @google/design.md lint /path/to/design/<project>/DESIGN.md --format json
   "findings": [
     {
       "severity": "warning",
-      "path": "components.button-primary",
-      "message": "textColor (#ffffff) on backgroundColor (#1A1C1E) has contrast ratio 15.42:1 — passes WCAG AA."
+      "path": "components.button-tertiary",
+      "message": "textColor (#b25c3c) on backgroundColor (#00000000) has contrast ratio 4.49:1, below WCAG AA minimum of 4.5:1.",
+      "rule": "contrast-ratio"
     },
     {
-      "severity": "error",
-      "path": "components.callout-quote.backgroundColor",
-      "message": "Token reference {colors.accent} not found"
+      "severity": "warning",
+      "path": "colors.link",
+      "message": "'link' is defined but never referenced by any component.",
+      "rule": "orphaned-tokens"
     }
   ],
-  "summary": { "errors": 1, "warnings": 1, "info": 0 }
+  "summary": { "errors": 0, "warnings": 2, "infos": 0 }
 }
 ```
 
@@ -161,20 +163,20 @@ npx @google/design.md lint /path/to/design/<project>/DESIGN.md --format json
 | Severity | cc-designer 反應 |
 |---|---|
 | `error` | 阻擋交付，回到 Step 6 修；改完重 lint 直到 0 error |
-| `warning` | 不阻擋交付，但要在交付訊息的 caveats 點名（例：「Lint 警告：button-secondary 對比 4.2，剛過 AA，可能要再 push」） |
+| `warning` | 不阻擋交付，但要在交付訊息的 caveats 點名（例：「Lint 警告：button-secondary 對比 4.2，低於 AA」）。`orphaned-tokens` 指沒被 component 引用的 token，只用在 prose 或 CSS 時可忽略 |
 | `info` | 完全不提，太雜訊 |
 
 **Binary 不存在處理**：
 
-- 用 `command -v design.md || npx --no-install @google/design.md --version 2>/dev/null` 偵測
-- 沒裝就 graceful skip，**不自動安裝**——在交付訊息提：「Lint 沒跑（@google/design.md 沒裝）。要裝就跑 `npm install -g @google/design.md@0.1.1`」
+- 用 `npx --no-install --package @google/design.md designmd --version` 偵測；結束碼非 0 就是沒裝
+- 沒裝就 graceful skip，**不自動安裝**——在交付訊息提：「Lint 沒跑（@google/design.md 沒裝）。要裝就跑 `npm install -g "@google/design.md@0.4.0"`」
 - 不要 silent skip——使用者要知道少了一道 QA
 
 ---
 
 ## 版本鎖定理由
 
-上游 spec 標 `version: alpha`，欄位名 / 結構**會變**。cc-designer 鎖 `0.1.1` 的理由：
+上游 spec 標 `version: alpha`，欄位名 / 結構**會變**。cc-designer 鎖 `0.4.0` 的理由：
 
 1. 確保 lint 行為穩定，不會因為 npm `latest` 自動跳版而打壞 cc-designer 的解析邏輯
 2. 上游若改 token schema（例：`rounded` 改名 `radius`），cc-designer 要先在 references 同步更新再升級
@@ -185,21 +187,21 @@ npx @google/design.md lint /path/to/design/<project>/DESIGN.md --format json
 1. 讀新版 spec 的 changelog
 2. 更新本檔的「DESIGN.md 寫作慣例」section
 3. 跑現有 example DESIGN.md 過 lint，確認 0 error
-4. 升 pin 版本，更新 quality_checklist.md 加一筆
+4. 升 pin 版本，同步 SKILL.md 的 Optional dependency 段落與本檔的指令
 
 ---
 
-## 與 frontend-skill 的 handoff
+## 與 production 前端的 handoff
 
-當 cc-designer 完成設計、要 handoff 給 frontend-skill 進 production：
+當 cc-designer 完成設計、要交棒給 production 前端（例如 `design-taste-frontend`）：
 
 ```
-design/<project>/DESIGN.md    # ← 直接交給 frontend-skill
+design/<project>/DESIGN.md    # ← 直接交給 production 前端
 ```
 
-frontend-skill 可以：
+接手方可以：
 
-- 把 colors / spacing / rounded 轉成 Tailwind theme config
+- 用 `designmd export` 轉成 Tailwind theme、CSS variables 或 W3C Design Tokens
 - 把 typography 轉成 CSS `@font-face` + utility classes
 - 把 components section 轉成 design tokens JSON 餵 Storybook / Figma
 
@@ -207,14 +209,9 @@ cc-designer 的責任**到** DESIGN.md 為止；不寫 Tailwind config / framewo
 
 ---
 
-## 與 `/design-consultation` 的關係
+## 與完整 design system 的關係
 
-| Skill | 角色 |
-|---|---|
-| `/design-consultation` | 從零幫使用者**規劃**完整 design system（涵蓋 motion、breakpoint、asset 體系），可能輸出多份檔案 |
-| `cc-designer` | **使用** design system 做設計成品；DESIGN.md 是它讀寫的單一品牌層 artifact |
-
-如果使用者跑了 `/design-consultation` 拿到一整套 system，cc-designer 期望那 system 的核心會被 export 成 DESIGN.md 放在 repo root；這樣兩個 skill 之間有清楚 contract。
+cc-designer **使用** design system 做設計成品，DESIGN.md 是它讀寫的單一品牌層 artifact；從零規劃完整 design system（motion、breakpoint、asset 體系）不在範圍內。如果使用者已有一整套 system，cc-designer 期望它的核心被 export 成 DESIGN.md 放在 repo root。
 
 ---
 
@@ -227,7 +224,7 @@ cc-designer 的責任**到** DESIGN.md 為止；不寫 Tailwind config / framewo
 | Step 2（寫設計敘事） | 把 DESIGN.md Overview prose 當敘事的起點；新發明的 token 暫存等 Step 3 寫進去 |
 | Step 3（建資料夾） | 若使用者沒提供 → 寫一份 DESIGN.md 到 `design/<project>/`；已有上層 DESIGN.md → 原地沿用、HTML 展開 token，不複製 |
 | Step 7（verification） | 跑 lint；error 阻擋交付，warning 進 caveats |
-| Step 8（極短總結） | caveats 提：「DESIGN.md 已建/更新；要不要我順手做 design tokens JSON 給 frontend-skill 用」 |
+| Step 8（極短總結） | caveats 提：「DESIGN.md 已建/更新」；需要 tokens 時用 `designmd export` |
 
 ---
 
@@ -235,8 +232,9 @@ cc-designer 的責任**到** DESIGN.md 為止；不寫 Tailwind config / framewo
 
 | 症狀 | 原因 | 修法 |
 |---|---|---|
-| `lint` 報 `Unknown section heading` | DESIGN.md 用了 spec 沒列的 H2 | spec 說 unknown section 應 preserve 不報錯——若你裝的版本報錯了，可能是版本太新；降回 0.1.1 |
+| `lint` 報 `Unknown section heading` | DESIGN.md 用了 spec 沒列的 H2 | spec 說 unknown section 應 preserve 不報錯——若你裝的版本報錯了，確認版本是 0.4.0 |
 | 同一份 DESIGN.md 第 2 次 load 顏色不一樣 | YAML 用了 unquoted hex（被 parser 當數字 / boolean） | 所有 hex 加雙引號 `"#1A1C1E"` |
+| transparent 背景的元件被報對比不足 | lint 把 `transparent` 當成黑底計算 | `backgroundColor` 改指向實際底色的 token，例如 `{colors.neutral}` |
 | Token reference 顯示為字串 `{colors.primary}` 而不是顏色 | components section 直接吐 string，不會自動 resolve | resolve 要靠下游工具（Tailwind / CSS-in-JS）；cc-designer 在寫 HTML 時手動 expand |
 | lint 警告對比剛過 AA（4.5:1±） | 邊界值 | 推到 ≥ 7:1（AAA）比較安全；或保留並在交付訊息明寫 |
 
@@ -288,7 +286,7 @@ serif 立刻定調氣質；正文是襯線體強化「被閱讀」的感覺，�
 
 - **Primary (#1F1B17)**：深咖啡墨色，所有正文與 heading
 - **Neutral (#F4EFE8)**：偏暖的米白底，比純白柔和
-- **Accent (#A8511A)**：紅磚色，**只**用於連結 hover / 主 CTA / 引文邊條
+- **Accent (#A8511A)**：紅磚色，**只**用於連結 hover / 主 CTA
 
 ## Typography
 
@@ -300,7 +298,7 @@ serif 立刻定調氣質；正文是襯線體強化「被閱讀」的感覺，�
 **Do**
 - 大量留白；section 之間 ≥ 96px gap
 - 圖片用 1:1 或 4:5，避免 16:9 那種「投影片感」
-- 引文用 italic + accent 邊條
+- 引文用 italic + 上下細線
 
 **Don't**
 - 不要加 box-shadow——這個 system 沒有 elevation token，全靠對比與留白
@@ -311,8 +309,8 @@ serif 立刻定調氣質；正文是襯線體強化「被閱讀」的感覺，�
 實 lint 一遍：
 
 ```bash
-npx @google/design.md lint design/quiet-studio/DESIGN.md
-# → 0 errors, 0 warnings, 3 info
+npx --no-install --package @google/design.md designmd lint design/quiet-studio/DESIGN.md
+# → 0 errors, 0 warnings, 1 info（0.4.0 實測）
 ```
 
 OK，可以交付。
@@ -321,7 +319,7 @@ OK，可以交付。
 
 ## 後續可能擴充（不在當前 scope）
 
-- **`@google/design.md diff` 整合**：cc-designer 改 DESIGN.md 時自動 diff 上一版，把 regression 寫進交付訊息
+- **`designmd diff` 整合**：cc-designer 改 DESIGN.md 時自動 diff 上一版，把 regression 寫進交付訊息
 - **DESIGN.md → speaker notes**：deck workflow 把 Overview / Colors prose 當 speaker notes 的補充素材
 - **Spec 升 beta 後**：補上 motion tokens / breakpoint tokens（如果 spec 加了的話）
 

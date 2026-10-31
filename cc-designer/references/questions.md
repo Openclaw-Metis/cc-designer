@@ -1,6 +1,6 @@
 # 提問 playbook
 
-好的提問 = 好的設計。Junior designer 問 5 個精準問題勝過 senior 假設 5 件事。
+好的提問 = 好的設計。Junior designer 問 5 個精準問題勝過 senior 假設 5 件事。一輪最多 5 題，下面的模板是題庫，挑會改變方向的問，不要全問。
 
 ## 何時**一定要**問（用 AskUserQuestion 或明列問題）
 
@@ -56,31 +56,25 @@
 - 「你想要什麼顏色？」——太寬。改問「有品牌主色嗎？或有喜歡的參考網站？」
 - 「你想要什麼風格？」——太寬。改問「比較偏 minimal 像 Linear、或偏 expressive 像 Vercel？」
 - 「要不要動畫？」——若任務本來就是 animation 就別問。
-- 過度問：每項都徵詢反而失去設計師的判斷。2-3 個關鍵決策 + 品牌就夠。
+- 過度問：每項都徵詢反而失去設計師的判斷。2-3 個關鍵決策 + 品牌就夠，上限 5 題。
 
 ## Batch 一次問完
 
 - 避免分 3 次各問 1 題——使用者會疲勞
-- 一次 questions_v2（若可用）或一次 message 把 5-10 題丟出去
+- 一次 `AskUserQuestion`（若可用）或一則訊息問完；工具題數上限低於 5 時，把相近的問題合併
 - 問題排序：**最關鍵的先**——起點 / 品牌 / 長度 > 變體 > 細節
 
 ## 當使用者說「你決定就好」
 
-- 不要多問；給一個具體 plan（3 行）讓他「yes / no / adjust」
-- 例：「OK，我會做 8 slide pitch deck、淺色 Söhne 字型 + 紫色 accent、1 張 hero + 6 張 content + 1 張 CTA。對嗎？」
+- 不要多問；給一個具體 plan（3 行）讓使用者回「yes / no / adjust」
+- 例：「OK，我會做 8 slide pitch deck、淺色 Space Grotesk 字型 + 紫色 accent、1 張 hero + 6 張 content + 1 張 CTA。對嗎？」
 
-## 示範（互動 prototype 要問 ≥ 10 題）
+## 示範（互動 prototype，一輪 5 題）
 
 ```
-1. 有既有 UI kit 或 codebase 可參考嗎？沒的話請提供截圖或品牌資料。
+1. 有既有 UI kit、codebase 或品牌資料可參考嗎？都沒有的話，要我從零探索嗎？
 2. Platform 是 iOS、Android、桌機、還是瀏覽器內？
-3. 幾個 screen？每個 screen 主要目的是什麼？
-4. 要真的可點擊完整 flow、還是局部 screen 就好？
-5. 希望幾種 variation？主要比較哪個維度（版面 / 色彩 / 互動 / copy）？
-6. 對創新度的期待：保守貼 pattern、中間、還是大膽不尋常？
-7. 動畫重要嗎？要做 motion demo 還是靜態 mock？
-8. 有沒有品牌色、字型、logo？
-9. 有沒有想要我避開的視覺風格？
-10. 要加哪些 Tweaks 供切換？
-11. 做好後會怎麼用（demo pitch、user test、internal review、匯出給他人）？
+3. 幾個 screen？要可點擊完整 flow，還是局部 screen 就好？
+4. 想比較幾種方向？主要比哪個維度（版面 / 色彩 / 互動 / copy）？
+5. 做好後會怎麼用（demo pitch、user test、internal review）？
 ```

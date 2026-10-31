@@ -27,6 +27,7 @@
 <head>
 <meta charset="utf-8">
 <title>Onboarding Prototype</title>
+<!-- 這份是開發入口 index.src.html；交付檔由 inline_jsx.mjs 產生 -->
 <!-- Pinned React + Babel -->
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
@@ -51,9 +52,19 @@
 </html>
 ```
 
-## 關鍵跨檔 scope 規則
+## 內嵌成交付檔
 
-每個 `<script type="text/babel">` 有獨立 scope。要共享 component，**檔末 `Object.assign(window, {...})`**：
+瀏覽器在 `file://` 會擋下 Babel 讀取外部 JSX 的請求，上面的骨架雙擊後是空白頁。每次改完 JSX，把它內嵌成交付檔：
+
+```bash
+node "<skill-root>/scripts/inline_jsx.mjs" index.src.html "Onboarding Prototype.html"
+```
+
+驗證與交付的都是輸出檔。`fetch()` 讀本地 JSON 同樣會被 `file://` 擋下，資料直接寫進 JSX。
+
+## 關鍵跨檔規則
+
+所有 `<script type="text/babel">` 共用全域：函式宣告互相看得到，同名的 top-level `const` 不會報錯，後載入的值會靜默蓋掉前者。每個檔案用**檔末 `Object.assign(window, {...})`** 列出對外的 component，公開介面才一眼可見：
 
 ```jsx
 // components.jsx
@@ -90,8 +101,8 @@ Starter 檔（例如 `ios_frame.jsx`）本身已在檔尾做 `Object.assign(wind
 
 ## 絕對不要
 
-- 寫 `const styles = {...}`——多檔同名會撞。改 `const welcomeStyles = {...}` 或 inline style。
-- 加 `type="module"` 到 `<script>`——會 break。
+- 寫 `const styles = {...}`——多檔同名會靜默互蓋。改 `const welcomeStyles = {...}` 或 inline style。
+- 加 `type="module"` 到 `<script>`——`file://` 下載不到。
 - 單檔 > 1000 行——拆！
 - **在 Claude.ai Artifacts iframe 預覽的 prototype** 中用 `scrollIntoView`——host 會被打壞。本地 HTML 直接雙擊打開用 `scrollIntoView` 沒問題。若不確定使用者會在哪裡預覽，預設用 `element.scrollTo()` / `window.scrollTo()` / ref + `getBoundingClientRect` 自算。
 
@@ -105,10 +116,12 @@ Starter 檔（例如 `ios_frame.jsx`）本身已在檔尾做 `Object.assign(wind
 
 ```jsx
 // 從 assets/starters 複製進來，由 Babel 載入
-<IOSDevice dark={false} navTitle="Home" showTabBar>
+<IOSDevice dark={false} title="Home">
   <WelcomeScreen onNext={handleNext} />
 </IOSDevice>
 ```
+
+不傳 `title` 時沒有 nav bar，children 從機身最頂端開始，內容會壓在狀態列與動態島底下；全出血畫面才這樣用，其他畫面傳 `title`，或自己留 60px 以上的上方留白。
 
 實際可用的 export 請檢查 starter 檔尾的 `Object.assign(window, {...})`。對照 `starter-components.md`：
 - ios_frame.jsx：`IOSDevice`、`IOSStatusBar`、`IOSNavBar`、`IOSGlassPill`、`IOSList`、`IOSListRow`、`IOSKeyboard`
@@ -123,7 +136,7 @@ Starter 檔（例如 `ios_frame.jsx`）本身已在檔尾做 `Object.assign(wind
 當使用者在預覽 pane 中點擊 / 評論某個 element，harness 會附上 `<mentioned-element>` 描述——有 `react:` 鏈、`dom:` 鏈、`id:`（`data-cc-id="cc-N"` 或 `data-dm-ref="N"`）。
 
 - `data-cc-id` / `data-dm-ref` 是 runtime 臨時屬性，**不在 source**——別在 source 搜
-- 用 `react:` 鏈推回你的 component；若還是不清楚，在瀏覽器 devtools 或 gstack `/browse` 內 eval 確認
+- 用 `react:` 鏈推回你的 component；若還是不清楚，在瀏覽器 devtools 內 eval 確認
 - **不要盲猜後就改**——先探再改
 
 ## 為了讓使用者能 comment，幫 screen 加 label
@@ -145,25 +158,13 @@ Tweaks 讓使用者即時切換變體。典型 prototype 的 tweaks：
 - 動畫 curve（ease-out / linear）
 - 要不要加 skip / back 按鈕
 - onboarding 步驟數
-- `dark` prop 切換（裝置 frame 支援）
+- `dark` prop 切換（`IOSDevice`、`AndroidDevice` 支援）
 
 細節見 `tweaks.md`。
 
-## Claude integration（可選）
+## 需要 AI 回覆的 prototype
 
-若 prototype 需要真的 AI 回覆，可用 `window.claude.complete()`（Claude.ai Artifacts 環境有提供；Claude Code 本地不一定）：
-
-```js
-const text = await window.claude.complete("Summarize ...");
-// or
-const text2 = await window.claude.complete({
-  messages: [{ role: "user", content: "..." }]
-});
-```
-
-- 使用 `claude-haiku-4-5`、1024 token 上限
-- 有 rate limit
-- Claude Code 本地 CLI 執行時此 API 不存在——如果使用者會在本地跑，改用 mock 回覆或 placeholder
+雙擊開啟的 HTML 沒有模型 API，也不該把 API key 寫進頁面。用寫死的 mock 回覆呈現流程，並在 caveats 標明回覆是假的。
 
 ## 內容密度
 
